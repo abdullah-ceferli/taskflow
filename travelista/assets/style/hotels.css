@@ -1,0 +1,155 @@
+:root {
+    --primary-color: #f8b600;
+}
+
+.popular-destinations-section {
+    background: #f9f9ff;
+}
+
+.popular-destinations-section-cards {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.popular-destinations-section-card {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    max-width: 29%;
+    width: 100%;
+}
+
+.single-destinations {
+    margin-top: 30px;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.single-destinations .thumb {
+    overflow: hidden;
+}
+
+.single-destinations .thumb img {
+    width: 100%;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.single-destinations .details {
+    background: #fff;
+    padding: 20px;
+}
+
+.single-destinations .details h4 {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.single-destinations .details h4 .star {
+    color: black;
+}
+
+.single-destinations .details h4 .star .checked {
+    color: orange;
+}
+
+.single-destinations .details .package-list {
+    margin-top: 30px;
+}
+
+.single-destinations .details .package-list li {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.single-destinations .details .price-btn {
+    background: var(--primary-color);
+    color: #222;
+    font-weight: 600;
+    padding: 5px 20px;
+}
+
+.single-destinations:hover {
+    box-shadow: 0px 10px 30px 0px rgba(60, 64, 143, 0.2);
+}
+
+.home-about-section-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.home-about-section-left {
+    padding-left: 20%;
+    padding-right: 15px;
+}
+
+.home-about-section-left h1 {
+    max-width: 510px;
+    color: black;
+    line-height: 1.1em;
+}
+
+.home-about-section-left p {
+    max-width: 560px;
+    padding: 20px 0;
+}
+
+.home-about-section-left .primary-btn {
+    margin-top: 10px;
+    background: #222;
+    font-size: 14px;
+}
+
+.home-about-section-left .primary-btn:hover {
+    background-color: var(--primary-color);
+}
+
+.home-about-section-right {
+    position: relative;
+    min-height: 1px;
+}
+
+.home-about-section-img-fluid {
+    height: auto;
+    width: 100%;
+}
+
+.home-about-section-left .primary-btn {
+    line-height: 42px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border: none;
+    color: #fff;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    position: relative;
+    margin-top: 10px;
+    background: #222;
+    font-size: 14px;
+    text-transform: uppercase ;
+}

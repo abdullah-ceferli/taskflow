@@ -1,0 +1,286 @@
+:root {
+    --primary-color: #f8b600;
+}
+
+.hero-section-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.hero-section-title {
+    margin-top: 70px;
+    padding: 90px 0px;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+}
+
+.hero-section-title h1 {
+    font-size: 48px;
+    font-weight: 600;
+    color: white;
+}
+
+.hero-section-title i {
+    margin: 0px 10px;
+    font-weight: 600;
+    color: white;
+}
+
+.about-info-section-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.about-info-section-left {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.about-info-section-left img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.about-info-section-right {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.about-info-section-right h6 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 400;
+    color: black;
+}
+
+.about-info-section-right h1 {
+    text-transform: uppercase;
+    max-width: 450px;
+    margin: 20px 0px;
+    color: black;
+}
+
+.about-info-section-right p {
+    max-width: 450px;
+}
+
+
+.price-area-section {
+    background: url(../img/price-bg.png);
+    background-size: cover;
+}
+
+.price-area-section-cards {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    width: 100%;
+}
+
+.price-area-section-card {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    max-width: 29.5%;
+    width: 100%;
+}
+
+.price-area-section-card-price {
+    background: #fff;
+    padding: 30px;
+}
+
+.price-area-section-card-price h4 {
+    text-align: center;
+    border-bottom: 1px solid var(--primary-color);
+    padding-bottom: 20px;
+    color: black;
+}
+
+.price-area-section-card-price-list {
+    margin-top: 30px;
+}
+
+.price-area-section-card-price-list li {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-area-section-card-price-list li a {
+    background: #f9f9ff;
+    border: 1px solid #eee;
+    color: #222;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 5px 20px;
+}
+
+.price-area-section-card-price-list li a:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.other-issue-area-section-cards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.other-issue-area-section-card {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    max-width: 22.25%;
+}
+
+.single-other-issue-area-section-card .thumb {
+    overflow: hidden;
+}
+
+.single-other-issue-area-section-card .thumb img {
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.single-other-issue-area-section-card h4 {
+    margin: 20px 0;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.single-other-issue-area-section-card a {
+    color: black;
+}
+
+.single-other-issue-area-section-card:hover .thumb img {
+    transform: scale(1.08) rotate(-3deg);
+}
+
+.single-other-issue-area-section-card:hover h4 {
+    color: var(--primary-color);
+}
+
+.testimonial-area-section {
+    background-color: #f9f9ff;
+}
+
+.testimonial-area-section-carousel {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.testimonial-slider {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 20px 0;
+    scrollbar-width: none;
+}
+
+.testimonial-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.testimonial-card {
+    min-width: calc(50% - 10px);
+    background: #fff;
+    padding: 40px;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    scroll-snap-align: start;
+    display: flex;
+    gap: 25px;
+    box-sizing: border-box;
+}
+
+.testimonial-card-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.testimonial-card-text {
+    color: #777;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin: 0 0 20px 0;
+}
+
+.testimonial-card-user-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #222;
+    cursor: pointer;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.testimonial-card-user-name:hover {
+    color: var(--primary-color);
+}
+
+.testimonial-card-stars {
+    color: var(--primary-color);
+    margin-top: 5px;
+    font-size: 20px;
+}
+
+.testimonial-nav-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.testimonial-nav-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #ffe8b3;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.testimonial-nav-dot.active {
+    background-color: var(--primary-color);
+    width: 25px;
+}

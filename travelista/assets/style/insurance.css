@@ -1,0 +1,97 @@
+:root {
+    --primary-color: #f8b600;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.insurence-one-section-main,
+.insurence-two-section-main {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.insurence-one-section-left,
+.insurence-two-section-left {
+    position: relative;
+    max-width: 42%;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.insurence-one-section-left img,
+.insurence-two-section-right img {
+    width: 100%;
+}
+
+.insurence-one-section-right,
+.insurence-two-section-right {
+    max-width: 50%;
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.insurence-one-section-right h6,
+.insurence-two-section-left h6 {
+    font-weight: 500;
+    text-transform: uppercase;
+    color: black;
+    font-size: 14px;
+}
+
+.insurence-one-section-right h1,
+.insurence-two-section-left h1 {
+    margin: 20px 0px;
+    color: black;
+}
+
+.insurence-one-section-right p,
+.insurence-two-section-left p {
+    max-width: 445px;
+}
+
+.list-wrap {
+    background: #fbfcff;
+    max-width: 445px;
+    padding: 30px;
+}
+
+.list-wrap ul {
+    list-style: none;
+    padding: 0;
+}
+
+.list-wrap li {
+    position: relative;
+    padding-left: 35px;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.list-wrap li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 15px;
+    height: 15px;
+    background: url("../img/bullet.png") no-repeat center;
+    background-size: contain;
+}
+
+.insurence-two-section{
+    padding-bottom: 120px;
+}

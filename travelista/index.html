@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel   </title>
+    <link rel="stylesheet" href="./assets/style/own-bootstrap.css">
+    <link rel="stylesheet" href="./assets/style/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <header class="header banner-area">
+            <nav class="nav-bar" id="nav-bar">
+                <div class="nav-bar-top">
+                    <div class="container">
+                        <div class="nav-bar-top-scrolling">
+                            <div class="nav-bar-top-left">
+                                <ul>
+                                    <li><a href="#">Visit Us</a></li>
+                                    <li><a href="#">Buy Tickets</a></li>
+                                </ul>
+                            </div>
+                            <div class="nav-bar-top-right">
+                                <div class="nav-bar-social">
+                                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                                    <a href="#"><i class="fa-brands fa-dribbble"></i></a>
+                                    <a href="#"><i class="fa-brands fa-behance"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container nav-bar-main-menu">
+                    <button type="button" id="mobile-nav-toggle"><i class="lnr lnr-menu"></i></button>
+                    <div class="nav-bar-main-menu-full">
+                        <div id="logo">
+                            <a href="./index.html"><img src="./assets/img/logo.png" alt="" title=""></a>
+                        </div>
+                        <nav id="nav-menu-container">
+                            <ul class="nav-menu sf-js-enabled sf-arrows" style="touch-action: pan-y;">
+                                <li><a href="./index.html" class="menu-active">Home</a></li>
+                                <li><a href="./assets/pages/about.html">About</a></li>
+                                <li><a href="./assets/pages/packages.html">Packages</a></li>
+                                <li><a href="./assets/pages/hotels.html">Hotels</a></li>
+                                <li><a href="./assets/pages/insurance.html">Insurence</a></li>
+                                <li class="menu-has-children"><a href="#" class="sf-with-ul">Blog</a>
+                                    <ul>
+                                        <li><a href="./assets/pages/blog-home.html">Blog Home</a></li>
+                                        <li><a href="./assets/pages/blog-single.html">Blog Single</a></li>
+                                    </ul>
+                                </li>
+                                <li class="menu-has-children"><a href="" class="sf-with-ul">Pages</a>
+                                    <ul>
+                                        <li><a href="./assets/pages/elements.html">Elements</a></li>
+                                        <li class="menu-has-children"><a href="" class="sf-with-ul">Level 2 </a>
+                                            <ul>
+                                                <li><a href="#">Item One</a></li>
+                                                <li><a href="#">Item Two</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li><a href="./assets/pages/contact.html">Contact</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </nav>
+            <div class="overlay overlay-bg"></div>
+            <div class="container">
+                <div class="hero-section" style="height: 925px;">
+                    <div class="hero-section-left">
+                        <h6>Away from monotonous life</h6>
+                        <h1>Magical Travel</h1>
+                        <p>
+                            If you are looking at blank cassettes on the web, you may be very confused at the difference
+                            in price. You may see some for as low as $.17 each.
+                        </p>
+                        <a href="#" class="primary-btn">Get Started</a>
+                    </div>
+                    <div class="hero-section-right">
+                        <ul class="hero-section-tab" id="myTab" role="tablist">
+                            <li class="tab-item">
+                                <a class="tab-link active" id="flight-tab" data-toggle="tab" href="#flight" role="tab"
+                                    aria-controls="flight" aria-selected="true">Flights</a>
+                            </li>
+                            <li class="tab-item">
+                                <a class="tab-link" id="hotel-tab" data-toggle="tab" href="#hotel" role="tab"
+                                    aria-controls="hotel" aria-selected="false">Hotels</a>
+                            </li>
+                            <li class="tab-item">
+                                <a class="tab-link" id="holiday-tab" data-toggle="tab" href="#holiday" role="tab"
+                                    aria-controls="holiday" aria-selected="false">Holidays</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="flight" role="tabpanel"
+                                aria-labelledby="flight-tab">
+                                <form class="form-wrap">
+                                    <input type="text" class="form-control" name="name" placeholder="From "
+                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'From '">
+                                    <input type="text" class="form-control" name="to" placeholder="To "
+                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'To '">
+                                    <input type="text" class="form-control date-picker hasDatepicker" name="start"
+                                        placeholder="Start " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Start '" id="dp1772482183581">
+                                    <input type="text" class="form-control date-picker hasDatepicker" name="return"
+                                        placeholder="Return " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Return '" id="dp1772482183582">
+                                    <input type="number" min="1" max="20" class="form-control" name="adults"
+                                        placeholder="Adults " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Adults '">
+                                    <input type="number" min="1" max="20" class="form-control" name="child"
+                                        placeholder="Child " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Child '">
+                                    <a href="#" class="primary-btn text-uppercase">Search flights</a>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="hotel" role="tabpanel" aria-labelledby="hotel-tab">
+                                <form class="form-wrap">
+                                    <input type="text" class="form-control" name="name" placeholder="From "
+                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'From '">
+                                    <input type="text" class="form-control" name="to" placeholder="To "
+                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'To '">
+                                    <input type="text" class="form-control date-picker hasDatepicker" name="start"
+                                        placeholder="Start " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Start '" id="dp1772482183583">
+                                    <input type="text" class="form-control date-picker hasDatepicker" name="return"
+                                        placeholder="Return " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Return '" id="dp1772482183584">
+                                    <input type="number" min="1" max="20" class="form-control" name="adults"
+                                        placeholder="Adults " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Adults '">
+                                    <input type="number" min="1" max="20" class="form-control" name="child"
+                                        placeholder="Child " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Child '">
+                                    <a href="#" class="primary-btn text-uppercase">Search Hotels</a>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="holiday" role="tabpanel" aria-labelledby="holiday-tab">
+                                <form class="form-wrap">
+                                    <input type="text" class="form-control" name="name" placeholder="From "
+                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'From '">
+                                    <input type="text" class="form-control" name="to" placeholder="To "
+                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'To '">
+                                    <input type="text" class="form-control date-picker hasDatepicker" name="start"
+                                        placeholder="Start " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Start '" id="dp1772482183585">
+                                    <input type="text" class="form-control date-picker hasDatepicker" name="return"
+                                        placeholder="Return " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Return '" id="dp1772482183586">
+                                    <input type="number" min="1" max="20" class="form-control" name="adults"
+                                        placeholder="Adults " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Adults '">
+                                    <input type="number" min="1" max="20" class="form-control" name="child"
+                                        placeholder="Child " onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Child '">
+                                    <a href="#" class="primary-btn text-uppercase">Search Holidays</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <!-- Start Popular Destinations Section -->
+            <section class="popular-destination-section section-gap">
+                <div class="container">
+                    <div class="popular-destination-section-txt">
+                        <div class="pb-70">
+                            <div class="title">
+                                <h1 class="h1-center">Popular Destinations</h1>
+                                <p>We all live in an age that belongs to the young at heart. Life that is becoming
+                                    extremely fast, day.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="popular-destination-section-cards">
+                        <div class="popular-destination-section-card">
+                            <div class="single-destination">
+                                <div class="thumb">
+                                    <div class="overlay overlay-bg"></div>
+                                    <img class="img-fluid" src="./assets/img/popular-destinations-img/d1.jpg" alt="">
+                                </div>
+                                <div class="desc">
+                                    <a href="#" class="price-btn">$150</a>
+                                    <h4>Mountain River</h4>
+                                    <p>Paraguay</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="popular-destination-section-card">
+                            <div class="single-destination">
+                                <div class="thumb">
+                                    <div class="overlay overlay-bg"></div>
+                                    <img class="img-fluid" src="./assets/img/popular-destinations-img/d2.jpg" alt="">
+                                </div>
+                                <div class="desc">
+                                    <a href="#" class="price-btn">$250</a>
+                                    <h4>Dream City</h4>
+                                    <p>Paris</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="popular-destination-section-card">
+                            <div class="single-destination">
+                                <div class="thumb">
+                                    <div class="overlay overlay-bg"></div>
+                                    <img class="img-fluid" src="./assets/img/popular-destinations-img/d3.jpg" alt="">
+                                </div>
+                                <div class="desc">
+                                    <a href="#" class="price-btn">$350</a>
+                                    <h4>Cloud Mountain</h4>
+                                    <p>Sri Lanka</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- End Popular Destinations Section -->
+
+            <!-- Start Price Area Section -->
+            <section class="price-area-section section-gap">
+                <div class="container">
+                    <div class="price-area-section-section-txt">
+                        <div class="pb-70">
+                            <div class="title">
+                                <h1 class="h1-center">We Provide Affordable Prices</h1>
+                                <p>Well educated, intellectual people, especially scientists at all times demonstrate
+                                    considerably.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-area-section-cards">
+                        <div class="price-area-section-card">
+                            <div class="price-area-section-card-price">
+                                <h4>Cheap Packages</h4>
+                                <ul class="price-area-section-card-price-list">
+                                    <li>
+                                        <span>New York</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Maldives</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Sri Lanka</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Nepal</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Thiland</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Singapore</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="price-area-section-card">
+                            <div class="price-area-section-card-price">
+                                <h4>Luxury Packages</h4>
+                                <ul class="price-area-section-card-price-list">
+                                    <li>
+                                        <span>New York</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Maldives</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Sri Lanka</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Nepal</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Thiland</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Singapore</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="price-area-section-card">
+                            <div class="price-area-section-card-price">
+                                <h4>Camping Packages</h4>
+                                <ul class="price-area-section-card-price-list">
+                                    <li>
+                                        <span>New York</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Maldives</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Sri Lanka</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Nepal</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Thiland</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                    <li>
+                                        <span>Singapore</span>
+                                        <a href="#">$1500</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- End Price Area Section -->
+
+            <!-- Start Other Issue Area Section -->
+            <section class="other-issue-area-section section-gap">
+                <div class="container">
+                    <div class="other-issue-area-section-txt">
+                        <div class="pb-70">
+                            <div class="title">
+                                <h1 class="h1-center">Other issues we can help you with</h1>
+                                <p>We all live in an age that belongs to the young at heart. Life that is.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="other-issue-area-section-cards">
+                        <div class="other-issue-area-section-card">
+                            <div class="single-other-issue-area-section-card">
+                                <div class="thumb">
+                                    <img class="img-fluid" src="./assets/img/issues-img/o1.jpg" alt="">
+                                </div>
+                                <a href="#">
+                                    <h4>Rent a Car</h4>
+                                </a>
+                                <p>
+                                    The preservation of human life is the ultimate value, a pillar of ethics and the
+                                    foundation.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="other-issue-area-section-card">
+                            <div class="single-other-issue-area-section-card">
+                                <div class="thumb">
+                                    <img class="img-fluid" src="./assets/img/issues-img/o2.jpg" alt="">
+                                </div>
+                                <a href="#">
+                                    <h4>Cruise Booking</h4>
+                                </a>
+                                <p>
+                                    I was always somebody who felt quite sorry for myself, what I had not got compared.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="other-issue-area-section-card">
+                            <div class="single-other-issue-area-section-card">
+                                <div class="thumb">
+                                    <img class="img-fluid" src="./assets/img/issues-img/o3.jpg" alt="">
+                                </div>
+                                <a href="#">
+                                    <h4>To Do List</h4>
+                                </a>
+                                <p>
+                                    The following article covers a topic that has recently moved to center stage–at
+                                    least it seems.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="other-issue-area-section-card">
+                            <div class="single-other-issue-area-section-card">
+                                <div class="thumb">
+                                    <img class="img-fluid" src="./assets/img/issues-img/o4.jpg" alt="">
+                                </div>
+                                <a href="#">
+                                    <h4>Food Features</h4>
+                                </a>
+                                <p>
+                                    There are many kinds of narratives and organizing principles. Science is driven by
+                                    evidence.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- End Other Issue Area Section -->
+
+            <!-- Start Testimonial Area Section -->
+            <secttion class="testimonial-area-section section-gap">
+                <div class="container">
+                    <div class="testimonial-area-section-txt">
+                        <div class="pb-70">
+                            <div class="title">
+                                <h1 class="h1-center">Testimonial from our Clients</h1>
+                                <p>The French Revolution constituted for the conscience of the dominant aristocratic
+                                    class a fall from</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-area-section-carousel">
+                        <div class="testimonial-slider" id="slider">
+                            <div class="testimonial-card">
+                                <img src="./assets/img/user-img/user1.png" class="testimonial-card-img">
+                                <div>
+                                    <p class="testimonial-card-text">A purpose is the eternal condition for success.
+                                        Every former smoker can tell you just how hard it is to stop smoking cigarettes.
+                                    </p>
+                                    <h4 class="testimonial-card-user-name">Carolyn Craig</h4>
+                                    <div class="testimonial-card-stars">★★★☆☆</div>
+                                </div>
+                            </div>
+                            <div class="testimonial-card">
+                                <img src="./assets/img/user-img/user2.png" class="testimonial-card-img">
+                                <div>
+                                    <p class="testimonial-card-text">Do you want to be even more successful? Learn to
+                                        love learning and growth. The more effort you put into improving your skills.
+                                    </p>
+                                    <h4 class="testimonial-card-user-name">Harriet Maxwell</h4>
+                                    <div class="testimonial-card-stars">★★★★☆</div>
+                                </div>
+                            </div>
+                            <div class="testimonial-card">
+                                <img src="./assets/img/user-img/user1.png" class="testimonial-card-img">
+                                <div>
+                                    <p class="testimonial-card-text">Consistent action is the bridge between goals and
+                                        accomplishment. I've seen massive growth since applying these principles.</p>
+                                    <h4 class="testimonial-card-user-name">James Wilson</h4>
+                                    <div class="testimonial-card-stars">★★★★★</div>
+                                </div>
+                            </div>
+                            <div class="testimonial-card">
+                                <img src="./assets/img/user-img/user2.png" class="testimonial-card-img">
+                                <div>
+                                    <p class="testimonial-card-text">The support community here is incredible. It makes
+                                        the difficult parts of career growth feel much more manageable.</p>
+                                    <h4 class="testimonial-card-user-name">Sarah Jenkins</h4>
+                                    <div class="testimonial-card-stars">★★★★☆</div>
+                                </div>
+                            </div>
+                            <div class="testimonial-card">
+                                <img src="./assets/img/user-img/user1.png" class="testimonial-card-img">
+                                <div>
+                                    <p class="testimonial-card-text">A purpose is the eternal condition for success.
+                                        Every former smoker can tell you just how hard it is to stop smoking cigarettes.
+                                    </p>
+                                    <h4 class="testimonial-card-user-name">Carolyn Craig</h4>
+                                    <div class="testimonial-card-stars">★★★☆☆</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="testimonial-nav-dots" id="dotContainer">
+                            <div class="testimonial-nav-dot active"></div>
+                            <div class="testimonial-nav-dot"></div>
+                            <div class="testimonial-nav-dot"></div>
+                            <div class="testimonial-nav-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </secttion>
+            <!-- End Testimonial Area Section -->
+
+            <!-- Start Home About Section -->
+            <section class="home-about-section section-gap">
+                <div class="container-fluid">
+                    <div class="home-about-section-main">
+                        <div class="home-about-section-left">
+                            <h1>
+                                Did not find your Package? <br>
+                                Feel free to ask us. <br>
+                                We‘ll make it for you
+                            </h1>
+                            <p>
+                                inappropriate behavior is often laughed off as “boys will be boys,” women face higher
+                                conduct standards especially in the workplace. That’s why it’s crucial that, as women,
+                                our behavior on the job is beyond reproach. inappropriate behavior is often laughed.
+                            </p>
+                            <a href="#" class="primary-btn">request custom price</a>
+                        </div>
+                        <div class="home-about-section-right">
+                            <img class="home-about-section-img-fluid" src="./assets/img/home-img/about-img.jpg" alt="">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- End Home About Section -->
+
+            <!-- Start Recent Blog Area Section -->
+            <section class="recent-blog-section section-gap">
+                <div class="container">
+                    <div class="recent-blog-section-txt">
+                        <div class="pb-70">
+                            <div class="title">
+                                <h1 class="h1-center">Latest from Our Blog</h1>
+                                <p>With the exception of Nietzsche, no other madman has contributed so much to human
+                                    sanity as has.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recent-blog-section-carusel">
+                        <div class="active-recent-blog-carusel">
+                            <div class="recent-blog-slider" id="blogSlider">
+                                <div class="single-recent-blog-post recent-blog-item">
+                                    <div class="thumb"><img src="./assets/img/blog-img/b1.jpg"></div>
+                                    <div class="details">
+                                        <div class="tags"><a href="#">Travel</a><a href="#">Life Style</a></div>
+                                        <h4 class="title">Low Cost Advertising</h4>
+                                        <p>Acres of Diamonds… you’ve read the famous story, or at least had it related
+                                            to you.</p>
+                                        <h6 class="date">31st January, 2018</h6>
+                                    </div>
+                                </div>
+                                <div class="single-recent-blog-post recent-blog-item">
+                                    <div class="thumb"><img src="./assets/img/blog-img/b2.jpg"></div>
+                                    <div class="details">
+                                        <div class="tags"><a href="#">Travel</a><a href="#">Life Style</a></div>
+                                        <h4 class="title">Creative Outdoor Ads</h4>
+                                        <p>Acres of Diamonds… you’ve read the famous story, or at least had it related
+                                            to you.</p>
+                                        <h6 class="date">31st January, 2018</h6>
+                                    </div>
+                                </div>
+                                <div class="single-recent-blog-post recent-blog-item">
+                                    <div class="thumb"><img src="./assets/img/blog-img/b3.jpg"></div>
+                                    <div class="details">
+                                        <div class="tags"><a href="#">Travel</a><a href="#">Life Style</a></div>
+                                        <h4 class="title">It's Classified How To Utilize Free</h4>
+                                        <p>Acres of Diamonds… you’ve read the famous story, or at least had it related
+                                            to you.</p>
+                                        <h6 class="recent-blog-date">31st January, 2018</h6>
+                                    </div>
+                                </div>
+                                <div class="single-recent-blog-post recent-blog-item">
+                                    <div class="thumb"><img src="./assets/img/blog-img/b2.jpg"></div>
+                                    <div class="details">
+                                        <div class="tags"><a href="#">Travel</a><a href="#">Life Style</a></div>
+                                        <h4 class="title">Low Cost Advertising</h4>
+                                        <p>Acres of Diamonds… you’ve read the famous story, or at least had it related
+                                            to you.</p>
+                                        <h6 class="date">31st January, 2018</h6>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recent-blog-dots" id="blogDots">
+                                <div class="recent-blog-dot active"></div>
+                                <div class="recent-blog-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- End Recent Blog Area Section -->
+        </main>
+        <footer class="footer section-gap">
+            <div class="container">
+                <div class="footer-top">
+                    <div class="footer-top-sections">
+                        <div class="footer-top-sections-widget">
+                            <h6>About Agency</h6>
+                            <p>
+                                The world has become so fast paced that people don’t want to stand by reading a page of
+                                information, they would much rather look at a presentation and understand the message.
+                                It has come to a point
+                            </p>
+                        </div>
+                    </div>
+                    <div class="footer-top-sections">
+                        <div class="footer-top-sections-widget">
+                            <h6>Navigation Links</h6>
+                            <div class="row">
+                                <div class="col">
+                                    <ul>
+                                        <li><a href="#">Home</a></li>
+                                        <li><a href="#">Feature</a></li>
+                                        <li><a href="#">Services</a></li>
+                                        <li><a href="#">Portfolio</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <ul>
+                                        <li><a href="#">Team</a></li>
+                                        <li><a href="#">Pricing</a></li>
+                                        <li><a href="#">Blog</a></li>
+                                        <li><a href="#">Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-top-sections">
+                        <div class="single-footer-widget">
+                            <h6>Newsletter</h6>
+                            <p>
+                                For business professionals caught between high OEM price and mediocre print and graphic
+                                output.
+                            </p>
+                            <div>
+                                <form method="get" class="subscription" novalidate="true">
+                                    <div class="footer-top-input">
+                                        <input name="EMAIL" placeholder="Email Address" onfocus="this.placeholder = ''"
+                                            onblur="this.placeholder = 'Email Address '" required="" type="email">
+
+                                        <button class="footer-top-button"><i
+                                                class="fa-regular fa-paper-plane"></i></button>
+                                    </div>
+
+                                    <!-- can put animate here -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-top-sections">
+                        <div class="single-footer-widget">
+                            <h6 class="mb-20">InstaFeed</h6>
+                            <ul class="footer-top-img">
+                                <li><img src="./assets/img/footer-img/i1.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i2.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i3.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i4.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i5.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i6.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i7.jpg" alt=""></li>
+                                <li><img src="./assets/img/footer-img/i8.jpg" alt=""></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p class="footer-bottom-txt">Copyright ©
+                        <script>document.write(new Date().getFullYear());</script> All rights reserved | This template
+                        is made with <i class="fa-regular fa-heart"></i> by <a href="#">Colorlib</a>
+                    </p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-dribbble"></i></a>
+                        <a href="#"><i class="fa-brands fa-behance"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="./assets/js/script.js"></script>
+</body>
+
+</html>

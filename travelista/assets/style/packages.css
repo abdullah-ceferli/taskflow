@@ -1,0 +1,246 @@
+:root {
+    --primary-color: #f8b600;
+}
+
+.hot-deal-section-carusel {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.hot-deal-section-carusel-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    gap: 20px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hot-deal-section-carusel-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.hot-deal-section-carusel-card {
+    min-width: 100%;
+    scroll-snap-align: start;
+    position: relative;
+}
+
+.hot-deal-section-carusel-image-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.hot-deal-section-carusel-image-container img {
+    width: 100%;
+    display: block;
+}
+
+.hot-deal-section-carusel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.hot-deal-section-carusel-price-tag {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--primary-color);
+    padding: 12px 25px;
+    color: #222;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.hot-deal-section-carusel-price-tag span {
+    font-weight: 500;
+}
+
+.hot-deal-section-carusel-info {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+.hot-deal-section-carusel-info h2 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.hot-deal-section-carusel-info p {
+    font-size: 1.1rem;
+    margin-top: 5px;
+}
+
+.hot-deal-section-carusel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.hot-deal-section-carusel-dot {
+    width: 12px;
+    height: 12px;
+    background: #ccc;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.hot-deal-section-carusel-dot.active {
+    background: var(--primary-color);
+    width: 20px;
+}
+
+.destinations-section-cards {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.destinations-section {
+    background: #f9f9ff;
+}
+
+.destinations-section-card {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    max-width: 29%;
+}
+
+.single-destinations {
+    margin-top: 30px;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.single-destinations .thumb {
+    overflow: hidden;
+}
+
+.single-destinations .thumb img {
+    width: 100%;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+}
+
+.single-destinations .details {
+    background: #fff;
+    padding: 20px;
+}
+
+.single-destinations .details h4 {
+    margin-bottom: 10px;
+}
+
+.single-destinations .details .package-list {
+    margin-top: 30px;
+}
+
+.single-destinations .details .package-list li {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.single-destinations .details .price-btn {
+    background: var(--primary-color);
+    color: #222;
+    font-weight: 600;
+    padding: 5px 20px;
+}
+
+.single-destinations:hover {
+    box-shadow: 0px 10px 30px 0px rgba(60, 64, 143, 0.2);
+}
+
+.home-about-section-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.home-about-section-left {
+    padding-left: 20%;
+    padding-right: 15px;
+}
+
+.home-about-section-left h1 {
+    max-width: 510px;
+    color: black;
+    line-height: 1.1em;
+}
+
+.home-about-section-left p {
+    max-width: 560px;
+    padding: 20px 0;
+}
+
+.home-about-section-left .primary-btn {
+    margin-top: 10px;
+    background: #222;
+    font-size: 14px;
+}
+
+.home-about-section-left .primary-btn:hover {
+    background-color: var(--primary-color);
+}
+
+.home-about-section-right {
+    position: relative;
+    min-height: 1px;
+}
+
+.home-about-section-img-fluid {
+    height: auto;
+    width: 100%;
+}
+
+.home-about-section-left .primary-btn {
+    line-height: 42px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border: none;
+    color: #fff;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    -webkit-transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    position: relative;
+    margin-top: 10px;
+    background: #222;
+    font-size: 14px;
+    text-transform: uppercase ;
+}

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Cache;
 
 final class DashboardCache
 {
+    private const PAYLOAD_VERSION = 3;
+
     public function __construct(private readonly CurrentWorkspace $current) {}
 
     public function remember(User $actor, Closure $loader): array
@@ -20,7 +22,7 @@ final class DashboardCache
 
         $version = Cache::get($this->versionKey($workspaceId), 1);
         $accessHash = hash('sha256', $actor->getRoleNames()->sort()->values()->join('|').'|'.$actor->getAllPermissions()->pluck('name')->sort()->values()->join('|'));
-        $key = "taskflow:dashboard:v1:workspace:{$workspaceId}:actor:{$actor->id}:access:{$accessHash}:version:{$version}";
+        $key = 'taskflow:dashboard:v'.self::PAYLOAD_VERSION.":workspace:{$workspaceId}:actor:{$actor->id}:access:{$accessHash}:version:{$version}";
 
         return Cache::remember($key, now()->addSeconds((int) config('taskflow.performance.dashboard_cache_seconds', 30)), $loader);
     }

@@ -16,6 +16,22 @@ final class EloquentTaskMetrics implements TaskMetricsInterface
 {
     public function forUser(User $user): TaskMetricsData
     {
+        $counts = $this->countsFor($user);
+
+        return new TaskMetricsData(
+            total: $counts['total'],
+            todo: $counts['todo'],
+            inProgress: $counts['in_progress'],
+            review: $counts['review'],
+            overdue: $counts['overdue'],
+            completedToday: $counts['completed_today'],
+            myTasks: $this->myTasks($user),
+            workload: $this->workloadFor($user),
+        );
+    }
+
+    public function countsFor(User $user): array
+    {
         $tasks = Task::query()->visibleTo($user);
         $aggregate = (clone $tasks)->toBase()->selectRaw(
             'COUNT(*) as total,
@@ -37,16 +53,14 @@ final class EloquentTaskMetrics implements TaskMetricsInterface
             ],
         )->first();
 
-        return new TaskMetricsData(
-            total: (int) ($aggregate->total ?? 0),
-            todo: (int) ($aggregate->todo ?? 0),
-            inProgress: (int) ($aggregate->in_progress ?? 0),
-            review: (int) ($aggregate->review ?? 0),
-            overdue: (int) ($aggregate->overdue ?? 0),
-            completedToday: (int) ($aggregate->completed_today ?? 0),
-            myTasks: $this->myTasks($user),
-            workload: $this->workloadFor($user),
-        );
+        return [
+            'total' => (int) ($aggregate->total ?? 0),
+            'todo' => (int) ($aggregate->todo ?? 0),
+            'in_progress' => (int) ($aggregate->in_progress ?? 0),
+            'review' => (int) ($aggregate->review ?? 0),
+            'overdue' => (int) ($aggregate->overdue ?? 0),
+            'completed_today' => (int) ($aggregate->completed_today ?? 0),
+        ];
     }
 
     public function myTasks(User $user): Collection

@@ -1,0 +1,13 @@
+{
+  "name": "modules/projects",
+  "autoload": {
+    "psr-4": {
+      "Modules\\Projects\\": "app/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Modules\\Projects\\Database\\Factories\\": "database/factories/"
+    }
+  }
+}

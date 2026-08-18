@@ -1,0 +1,15 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - app/Enums
+        - app/Exceptions
+        - Modules/Projects/app/Enums
+        - Modules/Projects/app/Policies
+        - Modules/Tasks/app/Enums
+        - Modules/Tasks/app/Policies
+        - Modules/Tasks/app/Services/TaskStatusService.php
+    tmpDir: storage/framework/cache/phpstan
+    checkModelProperties: true

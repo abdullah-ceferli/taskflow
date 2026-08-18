@@ -23,7 +23,7 @@ TaskFlow is a Laravel modular-monolith workspace for managing projects, membersh
 Configure MySQL in `.env`, select a supported PHP version in Laragon (PHP 8.4.1 or newer), and run these commands from the project directory:
 
 ```powershell
-php artisan migrate:fresh --seed
+php artisan migrate --seed
 npm run build
 php artisan serve
 ```
@@ -40,7 +40,9 @@ Local seeded accounts:
 
 ```powershell
 php artisan test
-php vendor/bin/pint --test app database Modules routes tests
+composer analyse
+composer mutation:critical
+php vendor/bin/pint --test
 npm run build
 ```
 

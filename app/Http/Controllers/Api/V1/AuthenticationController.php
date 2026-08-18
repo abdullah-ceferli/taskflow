@@ -17,7 +17,7 @@ final class AuthenticationController extends Controller
     {
         $token = $authentication->createPersonalAccessToken(CreatePersonalAccessTokenData::fromValidated($request->validated()));
 
-        return response()->json(['data' => ['token' => $token->plainTextToken, 'abilities' => $authentication->tokenAbilities()]], Response::HTTP_CREATED);
+        return response()->json(['data' => ['token' => $token->plainTextToken, 'abilities' => $token->accessToken->abilities, 'expires_at' => $token->accessToken->expires_at?->toISOString()]], Response::HTTP_CREATED);
     }
 
     public function show(Request $request): AuthenticatedUserResource

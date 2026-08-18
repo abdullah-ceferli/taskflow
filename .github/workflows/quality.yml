@@ -1,0 +1,47 @@
+name: Quality gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      DB_CONNECTION: sqlite
+      DB_DATABASE: database/ci.sqlite
+      CACHE_STORE: array
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: array
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: bcmath, intl, mbstring, pdo_sqlite, sqlite3
+          coverage: none
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: composer validate --strict
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: npm ci
+      - run: php -r "touch('database/ci.sqlite');"
+      - run: php artisan taskflow:migrations:check
+      - run: php artisan migrate --database=sqlite --force
+      - run: php artisan test
+      - run: php vendor/bin/phpstan analyse --memory-limit=1G
+      - run: php scripts/run-mutation-pilot.php
+      - run: php vendor/bin/pint --test
+      - run: npm run build
+      - run: php artisan taskflow:backup:restore-drill
+      - run: composer audit --locked
+      - run: npm audit --audit-level=high

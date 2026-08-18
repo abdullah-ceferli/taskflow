@@ -2,7 +2,6 @@
 
 namespace Modules\Projects\Http\Controllers\Api\V1;
 
-use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Modules\Projects\Data\CreateProjectData;
@@ -45,7 +44,7 @@ final class ProjectController
     {
         $this->authorize('view', $project);
 
-        return new ProjectResource($project);
+        return new ProjectResource($project->load('milestones'));
     }
 
     public function update(UpdateProjectRequest $request, Project $project): ProjectResource
@@ -73,7 +72,7 @@ final class ProjectController
     public function storeMember(StoreProjectMemberRequest $request, Project $project): JsonResponse
     {
         $this->authorize('manageMembers', $project);
-        $user = User::query()->findOrFail($request->integer('user_id'));
+        $user = $this->members->user($request->integer('user_id'));
         $member = $this->members->addMember($project, $user, ProjectMemberRole::from($request->string('member_role')->toString()), actor: $request->user());
 
         return (new ProjectMemberResource($member))->response()->setStatusCode(201);

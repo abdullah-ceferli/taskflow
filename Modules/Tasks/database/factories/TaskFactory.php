@@ -2,7 +2,9 @@
 
 namespace Modules\Tasks\Database\Factories;
 
+use App\Enums\WorkspaceRole;
 use App\Models\User;
+use App\Models\WorkspaceMember;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Projects\Models\Project;
 use Modules\Tasks\Enums\TaskPriority;
@@ -34,5 +36,19 @@ class TaskFactory extends Factory
     public function assignedTo(User $user): static
     {
         return $this->state(fn (): array => ['assignee_id' => $user->id]);
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Task $task): void {
+            if (! $task->assignee_id) {
+                return;
+            }
+
+            WorkspaceMember::query()->firstOrCreate(
+                ['workspace_id' => $task->project->workspace_id, 'user_id' => $task->assignee_id],
+                ['role' => WorkspaceRole::Member, 'joined_at' => now()],
+            );
+        });
     }
 }

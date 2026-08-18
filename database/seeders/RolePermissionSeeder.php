@@ -25,6 +25,7 @@ class RolePermissionSeeder extends Seeder
         $rolePermissions = [
             UserRole::Admin->value => PermissionName::cases(),
             UserRole::ProjectManager->value => [
+                PermissionName::ApiTokensManage,
                 PermissionName::ProjectsView,
                 PermissionName::ProjectsCreate,
                 PermissionName::ProjectsUpdate,
@@ -42,8 +43,11 @@ class RolePermissionSeeder extends Seeder
                 PermissionName::AttachmentsDelete,
                 PermissionName::ActivityView,
                 PermissionName::DashboardView,
+                PermissionName::IntegrationsManage,
+                PermissionName::ReportsExport,
             ],
             UserRole::Member->value => [
+                PermissionName::ApiTokensManage,
                 PermissionName::ProjectsView,
                 PermissionName::TasksView,
                 PermissionName::TasksStatusChange,
@@ -52,6 +56,7 @@ class RolePermissionSeeder extends Seeder
                 PermissionName::AttachmentsUpload,
                 PermissionName::AttachmentsDelete,
                 PermissionName::DashboardView,
+                PermissionName::ReportsExport,
             ],
         ];
 

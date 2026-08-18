@@ -1,0 +1,53 @@
+name: Versioned release and staging smoke
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Staging base URL for smoke checks
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: production
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: composer install --no-dev --classmap-authoritative --no-interaction --prefer-dist
+      - run: npm ci && npm run build
+      - run: tar --exclude=.git --exclude=node_modules --exclude=tests --exclude=sample -czf taskflow-release.tar.gz .
+      - uses: actions/upload-artifact@v7
+        with:
+          name: taskflow-${{ github.ref_name }}
+          path: taskflow-release.tar.gz
+          retention-days: 30
+
+  smoke:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Liveness
+        run: curl --fail --show-error --silent "${{ inputs.base_url }}/health/live"
+      - name: Readiness
+        run: curl --fail --show-error --silent -H "X-Operations-Token: ${{ secrets.TASKFLOW_OPERATIONS_TOKEN }}" "${{ inputs.base_url }}/health/ready"
+      - name: Guest pages
+        run: |
+          curl --fail --show-error --silent "${{ inputs.base_url }}/login" > /dev/null
+          curl --fail --show-error --silent "${{ inputs.base_url }}/register" > /dev/null

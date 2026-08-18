@@ -1,12 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Tasks\Http\Controllers\RecurringTaskController;
 use Modules\Tasks\Http\Controllers\TaskAttachmentController;
+use Modules\Tasks\Http\Controllers\TaskBoardController;
 use Modules\Tasks\Http\Controllers\TaskCommentController;
 use Modules\Tasks\Http\Controllers\TaskController;
+use Modules\Tasks\Http\Controllers\TaskDependencyController;
 
 Route::middleware(['web', 'auth'])->group(function (): void {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/projects/{project}/board', TaskBoardController::class)->name('projects.board');
+    Route::get('/projects/{project}/recurring-tasks', [RecurringTaskController::class, 'index'])->name('projects.recurring-tasks.index');
+    Route::post('/projects/{project}/recurring-tasks', [RecurringTaskController::class, 'store'])->name('projects.recurring-tasks.store');
+    Route::delete('/projects/{project}/recurring-tasks/{recurringTask}', [RecurringTaskController::class, 'destroy'])->name('projects.recurring-tasks.destroy');
     Route::get('/projects/{project}/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     Route::post('/projects/{project}/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
@@ -15,9 +22,12 @@ Route::middleware(['web', 'auth'])->group(function (): void {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::patch('/tasks/{task}/assignee', [TaskController::class, 'assign'])->name('tasks.assign');
     Route::patch('/tasks/{task}/status', [TaskController::class, 'changeStatus'])->name('tasks.status');
+    Route::post('/tasks/{task}/dependencies', [TaskDependencyController::class, 'store'])->name('tasks.dependencies.store');
+    Route::delete('/tasks/{task}/dependencies/{dependency}', [TaskDependencyController::class, 'destroy'])->name('tasks.dependencies.destroy');
     Route::post('/tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
     Route::delete('/tasks/{task}/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('tasks.comments.destroy');
     Route::post('/tasks/{task}/attachments', [TaskAttachmentController::class, 'store'])->name('tasks.attachments.store');
     Route::get('/tasks/{task}/attachments/{attachment}/download', [TaskAttachmentController::class, 'download'])->name('tasks.attachments.download');
+    Route::get('/tasks/{task}/attachments/{attachment}/preview', [TaskAttachmentController::class, 'preview'])->name('tasks.attachments.preview');
     Route::delete('/tasks/{task}/attachments/{attachment}', [TaskAttachmentController::class, 'destroy'])->name('tasks.attachments.destroy');
 });

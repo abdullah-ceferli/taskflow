@@ -4,7 +4,8 @@ namespace Modules\Tasks\Data;
 
 final readonly class TaskFiltersData
 {
-    public function __construct(public ?string $q, public ?string $status, public ?string $priority, public ?int $projectId, public ?int $assigneeId, public ?string $dueBefore, public string $sort, public string $direction, public int $perPage = 12) {}
+    /** @param list<int> $labelIds */
+    public function __construct(public ?string $q, public ?string $status, public ?string $priority, public ?int $projectId, public ?int $assigneeId, public ?string $dueBefore, public string $sort, public string $direction, public int $perPage = 12, public array $labelIds = []) {}
 
     public static function fromArray(array $data): self
     {
@@ -15,6 +16,8 @@ final readonly class TaskFiltersData
             $direction = 'desc';
         }
 
-        return new self($data['q'] ?? $data['search'] ?? null, $data['status'] ?? null, $data['priority'] ?? null, isset($data['project_id']) ? (int) $data['project_id'] : null, isset($data['assignee_id']) ? (int) $data['assignee_id'] : null, $data['due_before'] ?? null, $sort, $direction, max(1, min(100, (int) ($data['per_page'] ?? 12))));
+        $labels = is_array($data['label_ids'] ?? null) ? $data['label_ids'] : array_filter(explode(',', (string) ($data['label_ids'] ?? '')));
+
+        return new self($data['q'] ?? $data['search'] ?? null, $data['status'] ?? null, $data['priority'] ?? null, isset($data['project_id']) ? (int) $data['project_id'] : null, isset($data['assignee_id']) ? (int) $data['assignee_id'] : null, $data['due_before'] ?? null, $sort, $direction, max(1, min(100, (int) ($data['per_page'] ?? 12))), array_values(array_unique(array_map('intval', $labels))));
     }
 }

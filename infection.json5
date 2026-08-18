@@ -1,0 +1,39 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "Modules/Tasks/app/Services"
+        ],
+        "excludes": [
+            "EloquentTaskMetrics.php",
+            "NoopMalwareScanner.php",
+            "RecurrenceCalculator.php",
+            "RecurringTaskService.php",
+            "SavedTaskViewService.php",
+            "TaskAssignmentService.php",
+            "TaskAttachmentService.php",
+            "TaskBoardService.php",
+            "TaskCommentQueryService.php",
+            "TaskCommentService.php",
+            "TaskDependencyService.php",
+            "TaskLabelService.php",
+            "TaskQueryService.php",
+            "TaskService.php"
+        ]
+    },
+    "timeout": 30,
+    "testFramework": "phpunit",
+    "testFrameworkExtraArgs": "--testsuite=Feature --filter=mutation",
+    "phpUnit": {
+        "customPath": "vendor/bin/pest"
+    },
+    "minMsi": 70,
+    "minCoveredMsi": 80,
+    "mutators": {
+        "@default": true
+    },
+    "logs": {
+        "text": "storage/logs/infection.log",
+        "summary": "storage/logs/infection-summary.log"
+    }
+}

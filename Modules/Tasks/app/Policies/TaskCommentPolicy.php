@@ -17,6 +17,7 @@ class TaskCommentPolicy
     public function delete(User $user, TaskComment $comment): bool
     {
         return $user->hasPermissionTo(PermissionName::CommentsDelete->value)
+            && $user->can('view', $comment->task)
             && ($user->id === $comment->user_id || $user->can('update', $comment->task));
     }
 }

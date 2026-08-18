@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\SecurityMonitor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -36,6 +37,7 @@ class LoginRequest extends FormRequest
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey(), 60);
+            app(SecurityMonitor::class)->authenticationFailure('web', (string) $this->input('email'), $this);
 
             throw ValidationException::withMessages([
                 'email' => __('No active account matches these credentials. Please contact an administrator if you need access.'),

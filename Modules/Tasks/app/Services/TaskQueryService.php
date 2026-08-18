@@ -10,7 +10,7 @@ use Modules\Tasks\Repositories\Contracts\TaskRepositoryInterface;
 
 final class TaskQueryService
 {
-    public function __construct(private readonly TaskRepositoryInterface $tasks) {}
+    public function __construct(private readonly TaskRepositoryInterface $tasks, private readonly TaskLabelService $labels) {}
 
     public function paginate(User $actor, TaskFiltersData $filters): LengthAwarePaginator
     {
@@ -25,5 +25,10 @@ final class TaskQueryService
     public function users(User $actor): Collection
     {
         return $this->tasks->filterUsersFor($actor);
+    }
+
+    public function labels(User $actor): Collection
+    {
+        return $this->labels->list($actor);
     }
 }

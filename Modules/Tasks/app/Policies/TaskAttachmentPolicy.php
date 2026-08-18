@@ -17,6 +17,7 @@ class TaskAttachmentPolicy
     public function delete(User $user, TaskAttachment $attachment): bool
     {
         return $user->hasPermissionTo(PermissionName::AttachmentsDelete->value)
+            && $user->can('view', $attachment->task)
             && ($user->id === $attachment->uploaded_by || $user->can('update', $attachment->task));
     }
 }

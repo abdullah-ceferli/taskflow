@@ -1,0 +1,364 @@
+openapi: 3.1.0
+info:
+  title: TaskFlow API
+  version: 1.2.0
+  description: Versioned REST API for TaskFlow. Sanctum token abilities, Laravel policies, and the X-Workspace-Id context header are required for workspace-scoped endpoints. Responses expose X-API-Version and Deprecation lifecycle headers.
+servers:
+  - url: http://127.0.0.1:8000/api/v1
+security:
+  - bearerAuth: []
+paths:
+  /auth/token:
+    post:
+      tags: [Authentication]
+      security: []
+      summary: Create a personal access token
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TokenRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/TokenCreated' }, '422': { $ref: '#/components/responses/ValidationError' } }
+    delete:
+      tags: [Authentication]
+      summary: Revoke the current access token
+      responses: { '204': { description: Revoked }, '401': { $ref: '#/components/responses/Unauthenticated' } }
+  /me:
+    get:
+      tags: [Authentication]
+      summary: Return current authenticated user
+      responses: { '200': { $ref: '#/components/responses/User' }, '401': { $ref: '#/components/responses/Unauthenticated' } }
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List visible projects
+      parameters: [{ $ref: '#/components/parameters/Search' }, { $ref: '#/components/parameters/ProjectStatus' }]
+      responses: { '200': { $ref: '#/components/responses/ProjectCollection' }, '401': { $ref: '#/components/responses/Unauthenticated' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    post:
+      tags: [Projects]
+      summary: Create a project
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ProjectInput' } } } }
+      responses: { '201': { $ref: '#/components/responses/Project' }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /projects/{project}:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Projects]
+      summary: Get a visible project
+      responses: { '200': { $ref: '#/components/responses/Project' }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' } }
+    put:
+      tags: [Projects]
+      summary: Update a project
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ProjectInput' } } } }
+      responses: { '200': { $ref: '#/components/responses/Project' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    delete:
+      tags: [Projects]
+      summary: Archive a project
+      responses: { '204': { description: Archived }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /projects/{project}/members:
+    parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+    get:
+      tags: [Project members]
+      summary: List project members
+      responses: { '200': { $ref: '#/components/responses/MemberCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    post:
+      tags: [Project members]
+      summary: Add a project member
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/MemberInput' } } } }
+      responses: { '201': { $ref: '#/components/responses/Member' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /projects/{project}/members/{member}:
+    delete:
+      tags: [Project members]
+      summary: Remove a project member
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }, { $ref: '#/components/parameters/MemberId' }]
+      responses: { '204': { description: Removed }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' } }
+  /projects/{project}/activity:
+    get:
+      tags: [Activity]
+      summary: List activity for a visible project
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }, { $ref: '#/components/parameters/ActivityFilters' }]
+      responses: { '200': { $ref: '#/components/responses/ActivityCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks:
+    get:
+      tags: [Tasks]
+      summary: List visible tasks
+      parameters: [{ $ref: '#/components/parameters/TaskFilters' }]
+      responses: { '200': { $ref: '#/components/responses/TaskCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    post:
+      tags: [Tasks]
+      summary: Create a task
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TaskInput' } } } }
+      responses: { '201': { $ref: '#/components/responses/Task' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}:
+    parameters: [{ $ref: '#/components/parameters/TaskId' }]
+    get:
+      tags: [Tasks]
+      summary: Get a visible task
+      responses: { '200': { $ref: '#/components/responses/Task' }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' } }
+    put:
+      tags: [Tasks]
+      summary: Update a task
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TaskInput' } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    delete:
+      tags: [Tasks]
+      summary: Delete a task
+      responses: { '204': { description: Deleted }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}/status:
+    patch:
+      tags: [Tasks]
+      summary: Apply an allowed task status transition
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [status], properties: { status: { type: string, enum: [todo, in_progress, review, done, cancelled] }, expected_updated_at: { type: [string, 'null'], format: date-time } } } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '409': { description: Optimistic concurrency conflict }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}/assignee:
+    patch:
+      tags: [Tasks]
+      summary: Assign or unassign a project member
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { assignee_id: { type: [integer, 'null'] } } } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}/comments:
+    parameters: [{ $ref: '#/components/parameters/TaskId' }]
+    get:
+      tags: [Comments]
+      summary: List task comments
+      responses: { '200': { $ref: '#/components/responses/CommentCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    post:
+      tags: [Comments]
+      summary: Create a comment
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [body], properties: { body: { type: string, maxLength: 5000 } } } } } }
+      responses: { '201': { $ref: '#/components/responses/Comment' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}/comments/{comment}:
+    delete:
+      tags: [Comments]
+      summary: Delete an owned or managed comment
+      parameters: [{ $ref: '#/components/parameters/TaskId' }, { $ref: '#/components/parameters/CommentId' }]
+      responses: { '204': { description: Deleted }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' } }
+  /tasks/{task}/attachments:
+    parameters: [{ $ref: '#/components/parameters/TaskId' }]
+    get:
+      tags: [Attachments]
+      summary: List task attachments
+      responses: { '200': { $ref: '#/components/responses/AttachmentCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+    post:
+      tags: [Attachments]
+      summary: Upload a private task attachment
+      requestBody: { required: true, content: { multipart/form-data: { schema: { type: object, required: [attachment], properties: { attachment: { type: string, format: binary } } } } } }
+      responses: { '201': { $ref: '#/components/responses/Attachment' }, '422': { $ref: '#/components/responses/ValidationError' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}/attachments/{attachment}:
+    delete:
+      tags: [Attachments]
+      summary: Delete an owned or managed attachment
+      parameters: [{ $ref: '#/components/parameters/TaskId' }, { $ref: '#/components/parameters/AttachmentId' }]
+      responses: { '204': { description: Deleted }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' } }
+  /tasks/{task}/attachments/{attachment}/download:
+    get:
+      tags: [Attachments]
+      summary: Download an authorized private attachment
+      parameters: [{ $ref: '#/components/parameters/TaskId' }, { $ref: '#/components/parameters/AttachmentId' }]
+      responses: { '200': { description: File stream }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' } }
+  /tasks/{task}/attachments/{attachment}/preview:
+    get:
+      tags: [Attachments]
+      summary: Preview an authorized private attachment
+      parameters: [{ $ref: '#/components/parameters/TaskId' }, { $ref: '#/components/parameters/AttachmentId' }]
+      responses: { '200': { description: Inline private file stream }, '403': { $ref: '#/components/responses/Forbidden' }, '404': { $ref: '#/components/responses/NotFound' }, '415': { description: Preview not supported } }
+  /tasks/{task}/activity:
+    get:
+      tags: [Activity]
+      summary: List activity for a visible task
+      parameters: [{ $ref: '#/components/parameters/TaskId' }, { $ref: '#/components/parameters/ActivityFilters' }]
+      responses: { '200': { $ref: '#/components/responses/ActivityCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /activity:
+    get:
+      tags: [Activity]
+      summary: List actor-scoped activity
+      parameters: [{ $ref: '#/components/parameters/ActivityFilters' }]
+      responses: { '200': { $ref: '#/components/responses/ActivityCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /dashboard/summary:
+    get:
+      tags: [Dashboard]
+      summary: Get scoped dashboard metrics
+      responses: { '200': { $ref: '#/components/responses/DashboardSummary' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /dashboard/my-tasks:
+    get:
+      tags: [Dashboard]
+      summary: Get current user task queue
+      responses: { '200': { $ref: '#/components/responses/TaskCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /dashboard/overdue:
+    get:
+      tags: [Dashboard]
+      summary: Get scoped overdue tasks
+      responses: { '200': { $ref: '#/components/responses/TaskCollection' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /labels:
+    get:
+      tags: [Labels]
+      summary: List labels in the current workspace
+      responses: { '200': { description: Label collection } }
+    post:
+      tags: [Labels]
+      summary: Create a workspace or project label
+      responses: { '201': { description: Label created }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /tasks/{task}/labels:
+    put:
+      tags: [Labels]
+      summary: Replace a task's labels
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      responses: { '200': { $ref: '#/components/responses/Task' }, '403': { $ref: '#/components/responses/Forbidden' }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /task-views:
+    get:
+      tags: [Saved views]
+      summary: List the current user's saved task views
+      responses: { '200': { description: Saved view collection } }
+    post:
+      tags: [Saved views]
+      summary: Create or replace a named saved view
+      responses: { '201': { description: Saved view created }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /task-views/{savedTaskView}:
+    delete:
+      tags: [Saved views]
+      summary: Delete an owned saved view
+      parameters: [{ name: savedTaskView, in: path, required: true, schema: { type: integer } }]
+      responses: { '204': { description: Deleted }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /admin/users:
+    get:
+      tags: [Administration]
+      summary: List users, roles, and workspace memberships
+      responses: { '200': { description: Paginated administrator user collection }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /admin/users/{user}:
+    patch:
+      tags: [Administration]
+      summary: Change a user's global role
+      parameters: [{ name: user, in: path, required: true, schema: { type: integer } }]
+      responses: { '200': { description: Updated user }, '403': { $ref: '#/components/responses/Forbidden' }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /projects/{project}/board:
+    get:
+      tags: [Planning]
+      summary: Get the status-column Kanban read model
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+      responses: { '200': { description: Board columns and visible task resources }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /tasks/{task}/dependencies:
+    post:
+      tags: [Planning]
+      summary: Add a same-project blocking dependency with cycle prevention
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [depends_on_task_id], properties: { depends_on_task_id: { type: integer } } } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /tasks/{task}/dependencies/{dependency}:
+    delete:
+      tags: [Planning]
+      summary: Remove a task dependency
+      parameters: [{ $ref: '#/components/parameters/TaskId' }, { name: dependency, in: path, required: true, schema: { type: integer } }]
+      responses: { '204': { description: Removed }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /projects/{project}/recurring-tasks:
+    get:
+      tags: [Planning]
+      summary: List recurring task definitions
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+      responses: { '200': { description: Recurring definition collection } }
+    post:
+      tags: [Planning]
+      summary: Create a timezone-aware recurring task definition
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+      responses: { '201': { description: Recurring definition created }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /projects/{project}/recurring-tasks/{recurringTask}:
+    delete:
+      tags: [Planning]
+      summary: Deactivate a recurring definition
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }, { name: recurringTask, in: path, required: true, schema: { type: integer } }]
+      responses: { '204': { description: Deactivated } }
+  /projects/{project}/milestones:
+    get:
+      tags: [Planning]
+      summary: List project milestones with progress and risk
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+      responses: { '200': { description: Milestone collection } }
+    post:
+      tags: [Planning]
+      summary: Create a project milestone
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }]
+      responses: { '201': { description: Milestone created }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /projects/{project}/milestones/{milestone}/complete:
+    patch:
+      tags: [Planning]
+      summary: Mark a milestone complete
+      parameters: [{ $ref: '#/components/parameters/ProjectId' }, { name: milestone, in: path, required: true, schema: { type: integer } }]
+      responses: { '200': { description: Completed milestone } }
+  /search:
+    get:
+      tags: [Search]
+      summary: Permission-aware workspace search across projects, tasks, and comments
+      parameters: [{ name: q, in: query, required: true, schema: { type: string, minLength: 2, maxLength: 100 } }]
+      responses: { '200': { description: Search result collection }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /webhooks:
+    get:
+      tags: [Integrations]
+      summary: List workspace webhook subscriptions and delivery logs
+      responses: { '200': { description: Webhook collection }, '403': { $ref: '#/components/responses/Forbidden' } }
+    post:
+      tags: [Integrations]
+      summary: Create a signed HTTPS webhook subscription
+      responses: { '201': { description: Subscription plus one-time signing secret }, '422': { $ref: '#/components/responses/ValidationError' } }
+  /webhooks/{webhook}/rotate:
+    post:
+      tags: [Integrations]
+      summary: Rotate and return a one-time webhook signing secret
+      parameters: [{ name: webhook, in: path, required: true, schema: { type: integer } }]
+      responses: { '200': { description: Rotated signing secret } }
+  /webhooks/{webhook}:
+    delete:
+      tags: [Integrations]
+      summary: Disable a webhook subscription
+      parameters: [{ name: webhook, in: path, required: true, schema: { type: integer } }]
+      responses: { '204': { description: Disabled } }
+  /webhook-deliveries/{delivery}/replay:
+    post:
+      tags: [Integrations]
+      summary: Replay a logged webhook payload as a new signed delivery
+      parameters: [{ name: delivery, in: path, required: true, schema: { type: integer } }]
+      responses: { '202': { description: Replay queued } }
+  /reports/exports:
+    get:
+      tags: [Reports]
+      summary: List the actor's workspace report exports
+      responses: { '200': { description: Report export collection } }
+    post:
+      tags: [Reports]
+      summary: Queue a private expiring CSV task export
+      responses: { '202': { description: Export queued }, '403': { $ref: '#/components/responses/Forbidden' } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: Sanctum }
+  parameters:
+    WorkspaceId: { name: X-Workspace-Id, in: header, required: true, schema: { type: integer }, description: Workspace membership context for scoped API requests }
+    IdempotencyKey: { name: Idempotency-Key, in: header, required: false, schema: { type: string, maxLength: 100 }, description: Actor/workspace scoped key for replay-safe task creation }
+    ProjectId: { name: project, in: path, required: true, schema: { type: integer } }
+    TaskId: { name: task, in: path, required: true, schema: { type: integer } }
+    MemberId: { name: member, in: path, required: true, schema: { type: integer } }
+    CommentId: { name: comment, in: path, required: true, schema: { type: integer } }
+    AttachmentId: { name: attachment, in: path, required: true, schema: { type: integer } }
+    Search: { name: search, in: query, schema: { type: string } }
+    ProjectStatus: { name: status, in: query, schema: { type: string, enum: [draft, active, completed, archived] } }
+    TaskFilters: { name: per_page, in: query, schema: { type: integer, minimum: 1, maximum: 100 } }
+    ActivityFilters: { name: event, in: query, schema: { type: string } }
+  schemas:
+    TokenRequest: { type: object, required: [email, password, device_name], properties: { email: { type: string, format: email }, password: { type: string, format: password }, device_name: { type: string }, abilities: { type: array, minItems: 1, items: { type: string } }, expires_in_days: { type: integer, minimum: 1, maximum: 365, default: 30 } } }
+    ProjectInput: { type: object, required: [name], properties: { name: { type: string, minLength: 3, maxLength: 120 }, description: { type: [string, 'null'] }, starts_at: { type: [string, 'null'], format: date }, due_at: { type: [string, 'null'], format: date } } }
+    MemberInput: { type: object, required: [user_id, member_role], properties: { user_id: { type: integer }, member_role: { type: string, enum: [manager, member] } } }
+    TaskInput: { type: object, required: [project_id, title, priority], properties: { project_id: { type: integer }, title: { type: string, minLength: 3, maxLength: 180 }, description: { type: [string, 'null'] }, assignee_id: { type: [integer, 'null'] }, milestone_id: { type: [integer, 'null'] }, estimate_hours: { type: number, minimum: 0 }, priority: { type: string, enum: [low, medium, high, urgent] }, due_at: { type: [string, 'null'], format: date } } }
+  responses:
+    Unauthenticated: { description: Authentication required }
+    Forbidden: { description: Token ability or policy denied }
+    NotFound: { description: Record not found or nested record mismatch }
+    ValidationError: { description: Validation or domain rule failed }
+    TokenCreated: { description: Token created }
+    User: { description: Authenticated user resource }
+    Project: { description: Project resource }
+    ProjectCollection: { description: Paginated project collection }
+    Member: { description: Project member resource }
+    MemberCollection: { description: Project member collection }
+    Task: { description: Task resource }
+    TaskCollection: { description: Paginated task collection }
+    Comment: { description: Task comment resource }
+    CommentCollection: { description: Task comment collection }
+    Attachment: { description: Safe attachment metadata resource }
+    AttachmentCollection: { description: Attachment collection }
+    ActivityCollection: { description: Paginated scoped activity collection }
+    DashboardSummary: { description: Role-scoped dashboard metrics resource }

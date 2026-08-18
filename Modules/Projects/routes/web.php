@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Projects\Http\Controllers\ProjectController;
 use Modules\Projects\Http\Controllers\ProjectMemberController;
+use Modules\Projects\Http\Controllers\ProjectMilestoneController;
 
 Route::middleware(['web', 'auth'])->prefix('projects')->as('projects.')->group(function (): void {
     Route::get('/', [ProjectController::class, 'index'])->name('index');
@@ -16,4 +17,6 @@ Route::middleware(['web', 'auth'])->prefix('projects')->as('projects.')->group(f
     Route::get('/{project}/members', [ProjectMemberController::class, 'index'])->name('members.index');
     Route::post('/{project}/members', [ProjectMemberController::class, 'store'])->name('members.store');
     Route::delete('/{project}/members/{user}', [ProjectMemberController::class, 'destroy'])->name('members.destroy');
+    Route::post('/{project}/milestones', [ProjectMilestoneController::class, 'store'])->name('milestones.store');
+    Route::patch('/{project}/milestones/{milestone}/complete', [ProjectMilestoneController::class, 'complete'])->name('milestones.complete');
 });

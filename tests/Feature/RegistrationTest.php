@@ -18,9 +18,9 @@ test('guests can register and receive the member role', function (): void {
 
     $response->assertRedirect(route('dashboard.index'));
     $this->assertAuthenticated();
-
     $user = User::query()->where('email', 'new.member@example.test')->firstOrFail();
-    expect($user->hasRole(UserRole::Member->value))->toBeTrue();
+    expect($user->hasRole(UserRole::Member->value))->toBeTrue()
+        ->and($user->workspaces()->count())->toBe(1);
 });
 
 test('registration rejects duplicate email addresses', function (): void {

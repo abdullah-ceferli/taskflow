@@ -4,11 +4,12 @@ namespace Modules\Activity\Services;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\CurrentWorkspace;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Modules\Projects\Models\Project;
-use Modules\Projects\Models\ProjectMember;
 use Modules\Tasks\Models\Task;
 use Spatie\Activitylog\Models\Activity;
 
@@ -19,7 +20,7 @@ class ActivityQueryService
     {
         return Activity::query()
             ->with('causer')
-            ->where('properties->project_id', $project->id)
+            ->where($this->scopeColumn('project_id'), $project->id)
             ->latest()
             ->take($limit)
             ->get();
@@ -30,7 +31,7 @@ class ActivityQueryService
     {
         return Activity::query()
             ->with('causer')
-            ->where('properties->task_id', $task->id)
+            ->where($this->scopeColumn('task_id'), $task->id)
             ->latest()
             ->take($limit)
             ->get();
@@ -48,14 +49,20 @@ class ActivityQueryService
 
         return $this->scopedQuery($user)
             ->when($filters['event'] ?? null, fn (Builder $query, string $event) => $query->where('event', $event))
-            ->when($filters['project_id'] ?? null, fn (Builder $query, int $id) => $query->where('properties->project_id', $id))
-            ->when($filters['task_id'] ?? null, fn (Builder $query, int $id) => $query->where('properties->task_id', $id))
+            ->when($filters['project_id'] ?? null, fn (Builder $query, int $id) => $query->where($this->scopeColumn('project_id'), $id))
+            ->when($filters['task_id'] ?? null, fn (Builder $query, int $id) => $query->where($this->scopeColumn('task_id'), $id))
             ->when($filters['actor_id'] ?? null, fn (Builder $query, int $id) => $query->where('causer_id', $id))
             ->when($filters['date_from'] ?? null, fn (Builder $query, string $date) => $query->whereDate('created_at', '>=', $date))
             ->when($filters['date_to'] ?? null, fn (Builder $query, string $date) => $query->whereDate('created_at', '<=', $date))
             ->latest()
             ->paginate(20)
             ->withQueryString();
+    }
+
+    /** @return Collection<int, Activity> */
+    public function exportForUser(User $user, int $limit = 10000): Collection
+    {
+        return $this->scopedQuery($user)->latest()->limit($limit)->get();
     }
 
     /** @return array{events: Collection<int, string>, projects: Collection<int, Project>, tasks: Collection<int, Task>, actors: Collection<int, User>} */
@@ -79,26 +86,31 @@ class ActivityQueryService
         $query = Activity::query()->with(['causer', 'subject']);
 
         if ($user->hasRole(UserRole::Admin->value)) {
-            return $query;
+            $workspaceId = app(CurrentWorkspace::class)->idFor($user);
+
+            if (! $workspaceId) {
+                return $query->whereRaw('1 = 0');
+            }
+
+            $legacyProjectIds = Project::query()->withTrashed()->where('workspace_id', $workspaceId)->select('id');
+
+            return $query->where(fn (Builder $activities) => $activities
+                ->where($this->scopeColumn('workspace_id'), $workspaceId)
+                ->orWhere(fn (Builder $legacy) => $legacy
+                    ->whereNull('properties->workspace_id')
+                    ->whereIn($this->scopeColumn('project_id'), $legacyProjectIds)));
         }
 
-        if (! $user->hasRole(UserRole::ProjectManager->value)) {
-            $taskIds = Task::query()->where('assignee_id', $user->id)->pluck('id');
-
-            return $query->whereIn('properties->task_id', $taskIds->all());
+        if ($user->hasRole(UserRole::ProjectManager->value)) {
+            return $query->whereIn($this->scopeColumn('project_id'), Project::query()->manageableBy($user)->select('id'));
         }
 
-        $projectIds = Project::query()
-            ->where('owner_id', $user->id)
-            ->pluck('id')
-            ->merge(ProjectMember::query()
-                ->where('user_id', $user->id)
-                ->where('member_role', 'manager')
-                ->pluck('project_id'))
-            ->unique()
-            ->values();
+        return $query->whereIn($this->scopeColumn('task_id'), Task::query()->visibleTo($user)->select('id'));
+    }
 
-        return $query->whereIn('properties->project_id', $projectIds->all());
+    private function scopeColumn(string $property): string
+    {
+        return DB::connection()->getDriverName() === 'mysql' ? $property : "properties->{$property}";
     }
 
     private function normaliseFilters(array $filters): array

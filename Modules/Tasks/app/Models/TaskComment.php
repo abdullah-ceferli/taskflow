@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Tasks\Database\Factories\TaskCommentFactory;
 
+/**
+ * @property int $id
+ * @property int $task_id
+ * @property int $user_id
+ * @property string $body
+ * @property-read Task $task
+ */
 class TaskComment extends Model
 {
     use HasFactory, SoftDeletes;

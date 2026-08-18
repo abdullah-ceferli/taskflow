@@ -13,6 +13,12 @@ final class StoreTaskAttachmentRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['attachment' => ['required', 'file', 'max:10240', 'mimetypes:application/pdf,image/png,image/jpeg,image/webp,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']];
+        $fileRules = ['file', 'max:10240', 'mimetypes:application/pdf,image/png,image/jpeg,image/webp,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+
+        return [
+            'attachment' => ['required_without:attachments', ...$fileRules],
+            'attachments' => ['required_without:attachment', 'array', 'max:10'],
+            'attachments.*' => $fileRules,
+        ];
     }
 }

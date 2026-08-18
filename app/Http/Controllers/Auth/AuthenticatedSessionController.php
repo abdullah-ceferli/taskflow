@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
+use App\Services\AuthenticationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Modules\Activity\Enums\ActivityEvent;
+use Modules\Activity\Services\ActivityRecorder;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -25,37 +25,37 @@ class AuthenticatedSessionController extends Controller
         return view('auth.register');
     }
 
-    public function registerStore(RegisterRequest $request): RedirectResponse
+    public function registerStore(RegisterRequest $request, ActivityRecorder $activity, AuthenticationService $authentication): RedirectResponse
     {
-        $user = User::create([
-            'name' => $request->string('name')->trim()->toString(),
-            'email' => $request->string('email')->lower()->trim()->toString(),
-            'password' => Hash::make($request->string('password')->toString()),
-        ]);
-        $user->assignRole(UserRole::Member->value);
+        ['user' => $user, 'workspace' => $workspace] = $authentication->registerMember(
+            $request->string('name')->trim()->toString(),
+            $request->string('email')->lower()->trim()->toString(),
+            $request->string('password')->toString(),
+        );
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->put('current_workspace_id', $workspace->id);
 
-        activity('auth')->causedBy($user)->event('auth.registered')->log('auth.registered');
+        $activity->record(ActivityEvent::AuthRegistered, $user, $user);
 
         return redirect()->route('dashboard.index');
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request, ActivityRecorder $activity): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        activity('auth')->causedBy($request->user())->event('auth.login')->log('auth.login');
+        $activity->record(ActivityEvent::AuthLogin, $request->user(), $request->user());
 
         return redirect()->intended(route('dashboard.index'));
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, ActivityRecorder $activity): RedirectResponse
     {
-        activity('auth')->causedBy($request->user())->event('auth.logout')->log('auth.logout');
+        $activity->record(ActivityEvent::AuthLogout, $request->user(), $request->user());
 
         Auth::guard('web')->logout();
 

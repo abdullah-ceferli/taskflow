@@ -27,9 +27,17 @@ final class TaskAttachmentController
     public function store(StoreTaskAttachmentRequest $request, Task $task): JsonResponse
     {
         $this->authorize('create', [TaskAttachment::class, $task]);
-        $attachment = $this->service->upload($task->load('project'), $request->user(), $request->file('attachment'));
+        $files = $request->file('attachments', []);
+        if ($request->hasFile('attachment')) {
+            $files[] = $request->file('attachment');
+        }
+        $attachments = $this->service->uploadMany($task->load('project'), $request->user(), $files);
 
-        return (new TaskAttachmentResource($attachment))->response()->setStatusCode(201);
+        if (count($attachments) === 1) {
+            return (new TaskAttachmentResource($attachments[0]))->response()->setStatusCode(201);
+        }
+
+        return TaskAttachmentResource::collection(collect($attachments))->response()->setStatusCode(201);
     }
 
     public function download(Task $task, TaskAttachment $attachment)
@@ -37,7 +45,15 @@ final class TaskAttachmentController
         abort_unless($attachment->task_id === $task->id, 404);
         $this->authorize('view', $task);
 
-        return $this->service->download($attachment);
+        return $this->service->download($attachment->load('task'), request()->user());
+    }
+
+    public function preview(Task $task, TaskAttachment $attachment)
+    {
+        abort_unless($attachment->task_id === $task->id, 404);
+        $this->authorize('view', $task);
+
+        return $this->service->preview($attachment);
     }
 
     public function destroy(Task $task, TaskAttachment $attachment)

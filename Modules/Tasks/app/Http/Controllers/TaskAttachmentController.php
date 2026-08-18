@@ -18,7 +18,11 @@ class TaskAttachmentController
     public function store(UploadTaskAttachmentRequest $request, Task $task): RedirectResponse
     {
         $this->authorize('create', [TaskAttachment::class, $task]);
-        $this->attachments->upload($task->load('project'), $request->user(), $request->file('attachment'));
+        $files = $request->file('attachments', []);
+        if ($request->hasFile('attachment')) {
+            $files[] = $request->file('attachment');
+        }
+        $this->attachments->uploadMany($task->load('project'), $request->user(), $files);
 
         return back()->with('success', 'Attachment uploaded.');
     }
@@ -28,7 +32,15 @@ class TaskAttachmentController
         abort_unless($attachment->task_id === $task->id, 404);
         $this->authorize('view', $task);
 
-        return $this->attachments->download($attachment);
+        return $this->attachments->download($attachment->load('task'), request()->user());
+    }
+
+    public function preview(Task $task, TaskAttachment $attachment)
+    {
+        abort_unless($attachment->task_id === $task->id, 404);
+        $this->authorize('view', $task);
+
+        return $this->attachments->preview($attachment);
     }
 
     public function destroy(Task $task, TaskAttachment $attachment): RedirectResponse

@@ -2,10 +2,9 @@
 
 namespace Modules\Tasks\Http\Controllers\Api\V1;
 
-use App\Models\User;
+use App\Services\IdempotencyService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
-use Modules\Projects\Models\Project;
 use Modules\Tasks\Data\CreateTaskData;
 use Modules\Tasks\Data\TaskFiltersData;
 use Modules\Tasks\Data\UpdateTaskData;
@@ -26,7 +25,7 @@ final class TaskController
 {
     use AuthorizesRequests;
 
-    public function __construct(private readonly TaskRepositoryInterface $tasks, private readonly TaskService $taskService, private readonly TaskAssignmentService $assignments, private readonly TaskStatusService $statuses) {}
+    public function __construct(private readonly TaskRepositoryInterface $tasks, private readonly TaskService $taskService, private readonly TaskAssignmentService $assignments, private readonly TaskStatusService $statuses, private readonly IdempotencyService $idempotency) {}
 
     public function index(TaskIndexRequest $request)
     {
@@ -37,18 +36,20 @@ final class TaskController
 
     public function store(StoreTaskRequest $request): JsonResponse
     {
-        $project = Project::query()->findOrFail($request->integer('project_id'));
-        $this->authorize('create', [Task::class, $project]);
-        $task = $this->taskService->create($request->user(), $project, CreateTaskData::fromArray($project->id, $request->validated()));
+        return $this->idempotency->execute($request, $request->user(), function () use ($request): JsonResponse {
+            $projectId = $request->integer('project_id');
+            $this->authorize('create', [Task::class, $projectId]);
+            $task = $this->taskService->create($request->user(), $projectId, CreateTaskData::fromArray($projectId, $request->validated()));
 
-        return (new TaskResource($task))->response()->setStatusCode(201);
+            return (new TaskResource($task))->response()->setStatusCode(201);
+        });
     }
 
     public function show(Task $task): TaskResource
     {
         $this->authorize('view', $task);
 
-        return new TaskResource($task);
+        return new TaskResource($task->load('labels'));
     }
 
     public function update(UpdateTaskRequest $request, Task $task): TaskResource
@@ -69,7 +70,7 @@ final class TaskController
     public function assign(AssignTaskRequest $request, Task $task): TaskResource
     {
         $this->authorize('assign', $task);
-        $assignee = $request->filled('assignee_id') ? User::query()->findOrFail($request->integer('assignee_id')) : null;
+        $assignee = $this->assignments->assignee($request->filled('assignee_id') ? $request->integer('assignee_id') : null);
 
         return new TaskResource($this->assignments->assign($task->load('project'), $assignee, $request->user()));
     }
@@ -78,6 +79,6 @@ final class TaskController
     {
         $this->authorize('changeStatus', $task);
 
-        return new TaskResource($this->statuses->change($task->load('project'), TaskStatus::from($request->string('status')->toString()), $request->user()));
+        return new TaskResource($this->statuses->change($task->load('project'), TaskStatus::from($request->string('status')->toString()), $request->user(), $request->string('expected_updated_at')->toString() ?: null));
     }
 }

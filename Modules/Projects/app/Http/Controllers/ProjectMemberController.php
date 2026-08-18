@@ -35,7 +35,7 @@ class ProjectMemberController
 
         $this->members->addMember(
             $project,
-            User::query()->findOrFail($request->integer('user_id')),
+            $this->members->user($request->integer('user_id')),
             ProjectMemberRole::from($request->string('member_role')->toString()),
             actor: $request->user(),
         );

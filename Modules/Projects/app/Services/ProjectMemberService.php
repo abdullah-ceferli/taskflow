@@ -7,8 +7,10 @@ use App\Exceptions\DomainRuleViolation;
 use App\Models\User;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Modules\Activity\Enums\ActivityEvent;
 use Modules\Activity\Services\ActivityRecorder;
 use Modules\Projects\Enums\ProjectMemberRole;
+use Modules\Projects\Events\ProjectMemberAdded;
 use Modules\Projects\Models\Project;
 use Modules\Projects\Models\ProjectMember;
 
@@ -32,7 +34,7 @@ class ProjectMemberService
             'member_role' => $role,
             'joined_at' => $joinedAt ?? now(),
         ]);
-        $this->activity->record('project.member_added', $actor ?? $user, $project, [
+        ProjectMemberAdded::dispatch($actor ?? $user, $project, [
             'project_id' => $project->id,
             'member_id' => $user->id,
             'member_name' => $user->name ?: $user->email,
@@ -40,6 +42,11 @@ class ProjectMemberService
         ]);
 
         return $membership;
+    }
+
+    public function user(int $userId): User
+    {
+        return User::query()->findOrFail($userId);
     }
 
     public function removeMember(Project $project, User $user, ?User $actor = null): void
@@ -52,7 +59,7 @@ class ProjectMemberService
             ->where('project_id', $project->id)
             ->where('user_id', $user->id)
             ->delete();
-        $this->activity->record('project.member_removed', $actor ?? $user, $project, [
+        $this->activity->record(ActivityEvent::ProjectMemberRemoved, $actor ?? $user, $project, [
             'project_id' => $project->id,
             'member_id' => $user->id,
             'member_name' => $user->name ?: $user->email,

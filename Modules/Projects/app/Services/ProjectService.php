@@ -4,9 +4,11 @@ namespace Modules\Projects\Services;
 
 use App\Exceptions\DomainRuleViolation;
 use App\Models\User;
+use App\Services\CurrentWorkspace;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Modules\Activity\Enums\ActivityEvent;
 use Modules\Activity\Services\ActivityRecorder;
 use Modules\Projects\Data\CreateProjectData;
 use Modules\Projects\Data\UpdateProjectData;
@@ -21,12 +23,24 @@ class ProjectService
         private readonly ProjectRepositoryInterface $projects,
         private readonly ProjectMemberService $members,
         private readonly ActivityRecorder $activity,
+        private readonly CurrentWorkspace $currentWorkspace,
     ) {}
 
     public function create(User $actor, CreateProjectData $data): Project
     {
         return DB::transaction(function () use ($actor, $data): Project {
+            $workspaceId = $this->currentWorkspace->idFor($actor);
+
+            if (! $workspaceId) {
+                throw new DomainRuleViolation('A current workspace is required to create a project.');
+            }
+
+            if (! $this->currentWorkspace->canManage($actor)) {
+                throw new DomainRuleViolation('Only workspace owners and managers can create projects.');
+            }
+
             $project = new Project([
+                'workspace_id' => $workspaceId,
                 'name' => $data->name,
                 'slug' => $this->uniqueSlug($data->name),
                 'description' => $data->description,
@@ -38,7 +52,7 @@ class ProjectService
 
             $project = $this->projects->save($project);
             $this->members->addMember($project, $actor, ProjectMemberRole::Manager, actor: $actor);
-            $this->activity->record('project.created', $actor, $project, ['project_id' => $project->id, 'project_name' => $project->name]);
+            $this->activity->record(ActivityEvent::ProjectCreated, $actor, $project, ['project_id' => $project->id, 'project_name' => $project->name]);
 
             return $project;
         });
@@ -68,7 +82,7 @@ class ProjectService
             $project = $this->projects->save($project);
 
             if ($changed !== []) {
-                $this->activity->record('project.updated', $actor, $project, [
+                $this->activity->record(ActivityEvent::ProjectUpdated, $actor, $project, [
                     'project_id' => $project->id,
                     'changed' => $changed,
                     'old' => $old,
@@ -90,7 +104,7 @@ class ProjectService
             $project->status = ProjectStatus::Archived;
 
             $project = $this->projects->save($project);
-            $this->activity->record('project.archived', $actor, $project, ['project_id' => $project->id]);
+            $this->activity->record(ActivityEvent::ProjectArchived, $actor, $project, ['project_id' => $project->id]);
 
             return $project;
         });
@@ -110,7 +124,7 @@ class ProjectService
             $project->status = ProjectStatus::Active;
 
             $project = $this->projects->save($project);
-            $this->activity->record('project.activated', $actor, $project, ['project_id' => $project->id]);
+            $this->activity->record(ActivityEvent::ProjectActivated, $actor, $project, ['project_id' => $project->id]);
 
             return $project;
         });

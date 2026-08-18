@@ -1,7 +1,9 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Enums\WorkspaceRole;
 use App\Models\User;
+use App\Models\WorkspaceMember;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -35,6 +37,28 @@ test('a member can delete their own comment and attachment on an assigned task',
 
     expect(Gate::forUser($member)->allows('delete', $comment))->toBeTrue()
         ->and(Gate::forUser($member)->allows('delete', $attachment))->toBeTrue();
+});
+
+test('ownership never bypasses task visibility for comments or attachments', function (): void {
+    $manager = User::factory()->create();
+    $manager->assignRole(UserRole::ProjectManager->value);
+    $outsider = User::factory()->create();
+    $outsider->assignRole(UserRole::Member->value);
+    $project = Project::factory()->create(['owner_id' => $manager->id]);
+    WorkspaceMember::query()->create([
+        'workspace_id' => $project->workspace_id,
+        'user_id' => $outsider->id,
+        'role' => WorkspaceRole::Member,
+        'joined_at' => now(),
+    ]);
+    $task = Task::factory()->create(['project_id' => $project->id, 'creator_id' => $manager->id]);
+    $comment = TaskComment::factory()->create(['task_id' => $task->id, 'user_id' => $outsider->id]);
+    $attachment = TaskAttachment::factory()->create(['task_id' => $task->id, 'uploaded_by' => $outsider->id]);
+
+    expect(Gate::forUser($outsider)->allows('delete', $comment))->toBeFalse()
+        ->and(Gate::forUser($outsider)->allows('delete', $attachment))->toBeFalse()
+        ->and(Gate::forUser($manager)->allows('delete', $comment))->toBeTrue()
+        ->and(Gate::forUser($manager)->allows('delete', $attachment))->toBeTrue();
 });
 
 test('attachment delete restores the file when metadata deletion fails', function (): void {

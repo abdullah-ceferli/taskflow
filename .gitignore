@@ -3,6 +3,53 @@
 .env
 .env.backup
 .env.production
+.env.*
+!.env.example
+!**/.env.example
+
+# Private keys, certificates containing keys, and local credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+/credentials*.json
+/service-account*.json
+/secrets/
+/docker-compose.override.yml
+
+# Local databases, dumps, backups, and release artifacts
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+*.sql.gz
+*.dump
+*.bak
+*.backup
+/backup/
+/backups/
+/database/backups/
+/*.tar
+/*.tar.gz
+/*.zip
+
+# Test, analysis, and coverage output
+/.pest-cache
+/.phpstan.cache
+/.infection.log
+/coverage/
+/build/coverage/
+/junit.xml
+/storage/framework/cache/phpstan/
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+
+# Runtime-generated private files and uploads
+/storage/app/private/*
+!/storage/app/private/.gitignore
+/storage/app/public/*
+!/storage/app/public/.gitignore
 .phpactor.json
 .phpunit.result.cache
 /.codex

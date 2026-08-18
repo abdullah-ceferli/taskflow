@@ -2,8 +2,8 @@
 
 namespace Modules\Tasks\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -19,6 +19,7 @@ use Modules\Tasks\Http\Requests\AssignTaskRequest;
 use Modules\Tasks\Http\Requests\ChangeTaskStatusRequest;
 use Modules\Tasks\Http\Requests\CreateTaskRequest;
 use Modules\Tasks\Http\Requests\UpdateTaskRequest;
+use Modules\Tasks\Http\Resources\TaskResource;
 use Modules\Tasks\Models\Task;
 use Modules\Tasks\Repositories\Contracts\TaskRepositoryInterface;
 use Modules\Tasks\Services\TaskAssignmentService;
@@ -41,15 +42,15 @@ class TaskController
 
     public function create(Project $project): View
     {
-        $this->authorize('create', [Task::class, $project]);
+        $this->authorize('create', [Task::class, $project->id]);
 
-        return view('tasks::create', ['project' => $project, 'memberships' => $this->members->memberships($project), 'priorities' => TaskPriority::cases()]);
+        return view('tasks::create', ['project' => $project->load('milestones'), 'memberships' => $this->members->memberships($project), 'priorities' => TaskPriority::cases()]);
     }
 
     public function store(CreateTaskRequest $request, Project $project): RedirectResponse
     {
-        $this->authorize('create', [Task::class, $project]);
-        $task = $this->taskService->create($request->user(), $project, CreateTaskData::fromArray($project->id, $request->validated()));
+        $this->authorize('create', [Task::class, $project->id]);
+        $task = $this->taskService->create($request->user(), $project->id, CreateTaskData::fromArray($project->id, $request->validated()));
 
         return redirect()->route('tasks.show', $task)->with('success', 'Task created successfully.');
     }
@@ -58,14 +59,14 @@ class TaskController
     {
         $this->authorize('view', $task);
 
-        return view('tasks::show', ['task' => $task->load(['project', 'creator', 'assignee', 'comments.user', 'attachments.uploader']), 'memberships' => $this->members->memberships($task->project), 'nextStatuses' => $this->statuses->availableStatuses($task, request()->user()), 'activities' => $this->activity->recentForTask($task), 'canViewActivity' => request()->user()->can('viewAny', Activity::class)]);
+        return view('tasks::show', ['task' => $task->load(['project.milestones', 'milestone', 'creator', 'assignee', 'comments.user', 'attachments.uploader', 'dependencies', 'dependents']), 'dependencyCandidates' => $this->tasks->dependencyCandidates(request()->user(), $task), 'memberships' => $this->members->memberships($task->project), 'nextStatuses' => $this->statuses->availableStatuses($task, request()->user()), 'activities' => $this->activity->recentForTask($task), 'canViewActivity' => request()->user()->can('viewAny', Activity::class)]);
     }
 
     public function edit(Task $task): View
     {
         $this->authorize('update', $task);
 
-        return view('tasks::edit', compact('task'));
+        return view('tasks::edit', ['task' => $task->load('project.milestones')]);
     }
 
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
@@ -87,15 +88,19 @@ class TaskController
     public function assign(AssignTaskRequest $request, Task $task): RedirectResponse
     {
         $this->authorize('assign', $task);
-        $this->assignments->assign($task->load('project'), $request->filled('assignee_id') ? User::query()->findOrFail($request->integer('assignee_id')) : null, $request->user());
+        $this->assignments->assign($task->load('project'), $this->assignments->assignee($request->filled('assignee_id') ? $request->integer('assignee_id') : null), $request->user());
 
         return back()->with('success', 'Task assignment updated.');
     }
 
-    public function changeStatus(ChangeTaskStatusRequest $request, Task $task): RedirectResponse
+    public function changeStatus(ChangeTaskStatusRequest $request, Task $task): RedirectResponse|JsonResponse
     {
         $this->authorize('changeStatus', $task);
-        $this->statuses->change($task->load('project'), TaskStatus::from($request->string('status')->toString()), $request->user());
+        $task = $this->statuses->change($task->load('project'), TaskStatus::from($request->string('status')->toString()), $request->user(), $request->string('expected_updated_at')->toString() ?: null);
+
+        if ($request->expectsJson()) {
+            return (new TaskResource($task))->response();
+        }
 
         return back()->with('success', 'Task status updated.');
     }

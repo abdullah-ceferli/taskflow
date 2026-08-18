@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\WorkspaceService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -36,5 +37,12 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Member User', 'password' => bcrypt('password')],
         );
         $member->syncRoles(UserRole::Member->value);
+
+        $workspaces = app(WorkspaceService::class);
+        $workspace = $admin->workspaces()->first() ?? $workspaces->createFor($admin, 'TaskFlow Workspace');
+
+        foreach ([[$manager, 'manager'], [$member, 'member']] as [$user, $role]) {
+            $workspace->members()->syncWithoutDetaching([$user->id => ['role' => $role, 'joined_at' => now()]]);
+        }
     }
 }

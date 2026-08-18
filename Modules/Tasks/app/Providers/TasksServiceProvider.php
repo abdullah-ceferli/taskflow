@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\Tasks\Providers;
 
+use App\Http\Middleware\ResolveCurrentWorkspace;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Modules\Tasks\Console\Commands\DispatchRecurringTasks;
+use Modules\Tasks\Contracts\MalwareScannerInterface;
+use Modules\Tasks\Contracts\TaskMetricsInterface;
 use Modules\Tasks\Livewire\QuickTaskCreate;
 use Modules\Tasks\Livewire\TaskCommentForm;
 use Modules\Tasks\Livewire\TaskFilters;
@@ -24,6 +28,8 @@ use Modules\Tasks\Repositories\Contracts\TaskRepositoryInterface;
 use Modules\Tasks\Repositories\Eloquent\EloquentTaskAttachmentRepository;
 use Modules\Tasks\Repositories\Eloquent\EloquentTaskCommentRepository;
 use Modules\Tasks\Repositories\Eloquent\EloquentTaskRepository;
+use Modules\Tasks\Services\EloquentTaskMetrics;
+use Modules\Tasks\Services\NoopMalwareScanner;
 
 class TasksServiceProvider extends ServiceProvider
 {
@@ -32,13 +38,16 @@ class TasksServiceProvider extends ServiceProvider
         $this->app->bind(TaskRepositoryInterface::class, EloquentTaskRepository::class);
         $this->app->bind(TaskCommentRepositoryInterface::class, EloquentTaskCommentRepository::class);
         $this->app->bind(TaskAttachmentRepositoryInterface::class, EloquentTaskAttachmentRepository::class);
+        $this->app->bind(TaskMetricsInterface::class, EloquentTaskMetrics::class);
+        $this->app->bind(MalwareScannerInterface::class, NoopMalwareScanner::class);
     }
 
     public function boot(): void
     {
+        $this->commands([DispatchRecurringTasks::class]);
         $this->loadRoutesFrom(module_path('Tasks', 'routes/web.php'));
 
-        Route::middleware(['api', 'auth:sanctum'])
+        Route::middleware(['api', 'auth:sanctum', ResolveCurrentWorkspace::class])
             ->prefix('api/v1')
             ->as('api.v1.')
             ->group(module_path('Tasks', 'routes/api.php'));

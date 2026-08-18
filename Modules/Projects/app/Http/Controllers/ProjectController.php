@@ -14,6 +14,7 @@ use Modules\Projects\Http\Requests\StoreProjectRequest;
 use Modules\Projects\Http\Requests\UpdateProjectRequest;
 use Modules\Projects\Models\Project;
 use Modules\Projects\Repositories\Contracts\ProjectRepositoryInterface;
+use Modules\Projects\Services\ProjectMilestoneService;
 use Modules\Projects\Services\ProjectService;
 use Spatie\Activitylog\Models\Activity;
 
@@ -25,6 +26,7 @@ class ProjectController
         private readonly ProjectRepositoryInterface $projects,
         private readonly ProjectService $projectService,
         private readonly ActivityQueryService $activity,
+        private readonly ProjectMilestoneService $milestones,
     ) {}
 
     public function index(Request $request): View
@@ -68,6 +70,7 @@ class ProjectController
             'project' => $project->load('owner')->loadCount('memberships'),
             'activities' => $this->activity->recentForProject($project),
             'canViewActivity' => request()->user()->can('viewAny', Activity::class),
+            'milestones' => $this->milestones->forProject($project),
         ]);
     }
 

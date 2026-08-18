@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title', 'Workspace members')
+@section('page-title', 'Workspace members')
+@section('content')
+<div class="grid gap-6 lg:grid-cols-2"><section class="rounded-2xl border bg-white p-6"><h2 class="text-lg font-semibold">Invite member</h2><form method="POST" action="{{ route('workspace.invitations.store') }}" class="mt-5 space-y-4">@csrf<label class="block text-sm font-medium">Email<input name="email" type="email" required class="mt-1 w-full rounded-xl border-slate-300"></label><label class="block text-sm font-medium">Role<select name="role" class="mt-1 w-full rounded-xl border-slate-300">@foreach($roles as $role)<option value="{{ $role->value }}">{{ ucfirst($role->value) }}</option>@endforeach</select></label><button class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white">Create invitation</button></form></section><section class="rounded-2xl border bg-white p-6"><h2 class="text-lg font-semibold">Members</h2><div class="mt-4 space-y-3">@foreach($memberships as $membership)<div class="rounded-xl bg-slate-50 p-3"><p class="font-medium">{{ $membership->user->name }}</p><p class="text-sm text-slate-500">{{ $membership->user->email }} · {{ $membership->role->value }}</p></div>@endforeach</div></section></div>
+@endsection

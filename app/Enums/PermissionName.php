@@ -23,4 +23,6 @@ enum PermissionName: string
     case AttachmentsDelete = 'attachments.delete';
     case ActivityView = 'activity.view';
     case DashboardView = 'dashboard.view';
+    case IntegrationsManage = 'integrations.manage';
+    case ReportsExport = 'reports.export';
 }

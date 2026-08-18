@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title', 'Search')
+@section('page-title', 'Global search')
+@section('content')
+<div class="mx-auto max-w-4xl"><form action="{{ route('search') }}" method="GET" class="flex gap-2"><label class="sr-only" for="global-search">Search projects, tasks, and comments</label><input id="global-search" name="q" value="{{ $query }}" required minlength="2" class="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3" placeholder="Search projects, tasks, and comments"><button class="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white">Search</button></form><p class="mt-5 text-sm text-slate-500">{{ $results->count() }} permission-aware results for “{{ $query }}”.</p><div class="mt-5 space-y-3">@forelse($results as $result)<a href="{{ $result['url'] }}" class="block rounded-2xl border bg-white p-5 shadow-sm transition hover:border-indigo-200"><span class="text-xs font-bold uppercase tracking-widest text-indigo-600">{{ $result['type'] }}</span><h2 class="mt-2 font-semibold text-slate-950">{{ $result['title'] }}</h2>@if($result['excerpt'])<p class="mt-2 text-sm text-slate-600">{{ $result['excerpt'] }}</p>@endif</a>@empty<p class="rounded-2xl bg-white p-8 text-center text-sm text-slate-500">No visible records matched.</p>@endforelse</div></div>
+@endsection

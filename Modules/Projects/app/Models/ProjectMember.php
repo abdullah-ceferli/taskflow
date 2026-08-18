@@ -2,7 +2,9 @@
 
 namespace Modules\Projects\Models;
 
+use App\Enums\WorkspaceRole;
 use App\Models\User;
+use App\Models\WorkspaceMember;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +22,19 @@ class ProjectMember extends Model
     }
 
     protected $fillable = ['project_id', 'user_id', 'member_role', 'joined_at'];
+
+    protected static function booted(): void
+    {
+        static::created(function (ProjectMember $membership): void {
+            WorkspaceMember::query()->firstOrCreate(
+                ['workspace_id' => $membership->project->workspace_id, 'user_id' => $membership->user_id],
+                [
+                    'role' => $membership->member_role === ProjectMemberRole::Manager ? WorkspaceRole::Manager : WorkspaceRole::Member,
+                    'joined_at' => $membership->joined_at ?? now(),
+                ],
+            );
+        });
+    }
 
     protected function casts(): array
     {

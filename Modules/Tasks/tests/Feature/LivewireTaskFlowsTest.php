@@ -5,10 +5,13 @@ use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Modules\Projects\Enums\ProjectMemberRole;
 use Modules\Projects\Models\Project;
+use Modules\Projects\Models\ProjectMember;
 use Modules\Tasks\Livewire\QuickTaskCreate;
 use Modules\Tasks\Livewire\TaskCommentForm;
 use Modules\Tasks\Livewire\TaskFilters;
+use Modules\Tasks\Livewire\TaskStatusSelector;
 use Modules\Tasks\Models\Task;
 use Modules\Tasks\Models\TaskComment;
 use Tests\TestCase;
@@ -63,4 +66,60 @@ test('quick task creation uses the authorized task service', function (): void {
         ->assertSet('title', '');
 
     expect(Task::query()->where('project_id', $project->id)->where('title', 'Livewire created task')->exists())->toBeTrue();
+});
+
+test('approved Livewire forms expose validation errors without writing invalid data', function (): void {
+    $manager = livewireManager();
+    $project = Project::factory()->create(['owner_id' => $manager->id]);
+    $task = Task::factory()->create(['project_id' => $project->id, 'creator_id' => $manager->id]);
+
+    Livewire::actingAs($manager)->test(TaskCommentForm::class, ['task' => $task])
+        ->set('body', '')
+        ->call('save')
+        ->assertHasErrors(['body' => 'required']);
+
+    Livewire::actingAs($manager)->test(QuickTaskCreate::class)
+        ->set('projectId', (string) $project->id)
+        ->set('title', 'x')
+        ->set('priority', 'medium')
+        ->call('save')
+        ->assertHasErrors(['title' => 'min']);
+
+    expect(TaskComment::query()->where('task_id', $task->id)->count())->toBe(0)
+        ->and(Task::query()->where('project_id', $project->id)->count())->toBe(1);
+});
+
+test('approved Livewire actions reject a visible but unauthorized member', function (): void {
+    $manager = livewireManager();
+    $member = User::factory()->create();
+    $member->assignRole(UserRole::Member->value);
+    $project = Project::factory()->create(['owner_id' => $manager->id]);
+    ProjectMember::query()->create([
+        'project_id' => $project->id,
+        'user_id' => $member->id,
+        'member_role' => ProjectMemberRole::Member,
+        'joined_at' => now(),
+    ]);
+    $task = Task::factory()->create(['project_id' => $project->id, 'creator_id' => $manager->id]);
+
+    Livewire::actingAs($member)->test(TaskCommentForm::class, ['task' => $task])->assertForbidden();
+    Livewire::actingAs($member)->test(TaskStatusSelector::class, ['task' => $task])->assertForbidden();
+    Livewire::actingAs($member)->test(QuickTaskCreate::class)
+        ->set('projectId', (string) $project->id)
+        ->set('title', 'Unauthorized task')
+        ->set('priority', 'medium')
+        ->call('save')
+        ->assertForbidden();
+});
+
+test('task filters apply search input without leaking unrelated results', function (): void {
+    $manager = livewireManager();
+    $project = Project::factory()->create(['owner_id' => $manager->id]);
+    Task::factory()->create(['project_id' => $project->id, 'creator_id' => $manager->id, 'title' => 'Needle Alpha delivery']);
+    Task::factory()->create(['project_id' => $project->id, 'creator_id' => $manager->id, 'title' => 'Hidden Beta delivery']);
+
+    Livewire::actingAs($manager)->test(TaskFilters::class)
+        ->set('search', 'Needle Alpha')
+        ->assertSee('Needle Alpha delivery')
+        ->assertDontSee('Hidden Beta delivery');
 });

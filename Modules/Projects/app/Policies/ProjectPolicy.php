@@ -5,12 +5,15 @@ namespace Modules\Projects\Policies;
 use App\Enums\PermissionName;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\CurrentWorkspace;
 use Modules\Projects\Enums\ProjectMemberRole;
 use Modules\Projects\Enums\ProjectStatus;
 use Modules\Projects\Models\Project;
 
 class ProjectPolicy
 {
+    public function __construct(private readonly CurrentWorkspace $currentWorkspace) {}
+
     public function viewAny(User $user): bool
     {
         return $user->hasPermissionTo(PermissionName::ProjectsView->value);
@@ -18,12 +21,14 @@ class ProjectPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo(PermissionName::ProjectsCreate->value);
+        return $this->currentWorkspace->canManage($user)
+            && $user->hasPermissionTo(PermissionName::ProjectsCreate->value);
     }
 
     public function view(User $user, Project $project): bool
     {
-        return $user->hasPermissionTo(PermissionName::ProjectsView->value)
+        return $this->currentWorkspace->belongsToCurrent($user, $project->workspace_id)
+            && $user->hasPermissionTo(PermissionName::ProjectsView->value)
             && ($user->hasRole(UserRole::Admin->value)
                 || $project->owner_id === $user->id
                 || $project->members()->whereKey($user->id)->exists());
@@ -31,7 +36,7 @@ class ProjectPolicy
 
     public function update(User $user, Project $project): bool
     {
-        if ($project->status === ProjectStatus::Archived) {
+        if (! $this->currentWorkspace->belongsToCurrent($user, $project->workspace_id) || $project->status === ProjectStatus::Archived) {
             return false;
         }
 
@@ -41,13 +46,15 @@ class ProjectPolicy
 
     public function archive(User $user, Project $project): bool
     {
-        return $user->hasPermissionTo(PermissionName::ProjectsArchive->value)
+        return $this->currentWorkspace->belongsToCurrent($user, $project->workspace_id)
+            && $user->hasPermissionTo(PermissionName::ProjectsArchive->value)
             && ($user->hasRole(UserRole::Admin->value) || $project->owner_id === $user->id);
     }
 
     public function manageMembers(User $user, Project $project): bool
     {
-        return $user->hasPermissionTo(PermissionName::ProjectsMembersManage->value)
+        return $this->currentWorkspace->belongsToCurrent($user, $project->workspace_id)
+            && $user->hasPermissionTo(PermissionName::ProjectsMembersManage->value)
             && ($user->hasRole(UserRole::Admin->value)
                 || $project->owner_id === $user->id
                 || $project->memberships()

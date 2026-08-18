@@ -54,7 +54,7 @@ test('task creation rejects archived projects and foreign assignees', function (
     $archivedProject = Project::factory()->create(['owner_id' => $manager->id, 'status' => ProjectStatus::Archived]);
     $data = new CreateTaskData($activeProject->id, 'Valid title', null, $outsider->id, TaskPriority::Medium, null);
 
-    expect(fn () => app(TaskService::class)->create($manager, $activeProject, $data))
+    expect(fn () => app(TaskService::class)->create($manager, $activeProject->id, $data))
         ->toThrow(DomainRuleViolation::class, 'assignee must be a project member');
 
     ProjectMember::query()->create([
@@ -66,6 +66,6 @@ test('task creation rejects archived projects and foreign assignees', function (
 
     $archivedData = new CreateTaskData($archivedProject->id, 'Blocked title', null, null, TaskPriority::Medium, null);
 
-    expect(fn () => app(TaskService::class)->create($manager, $archivedProject, $archivedData))
+    expect(fn () => app(TaskService::class)->create($manager, $archivedProject->id, $archivedData))
         ->toThrow(DomainRuleViolation::class, 'active projects');
 });

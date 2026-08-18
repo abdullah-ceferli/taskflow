@@ -31,6 +31,9 @@ final class TaskFilters extends Component
 
     public string $direction = 'desc';
 
+    /** @var list<int|string> */
+    public array $labelIds = [];
+
     public function updated($name): void
     {
         if ($name !== 'page') {
@@ -42,8 +45,8 @@ final class TaskFilters extends Component
     {
         $this->authorize('viewAny', Task::class);
         $actor = request()->user();
-        $filters = TaskFiltersData::fromArray(['search' => $this->search, 'status' => $this->status, 'priority' => $this->priority, 'project_id' => $this->projectId ?: null, 'assignee_id' => $this->assigneeId ?: null, 'due_before' => $this->dueBefore ?: null, 'sort' => $this->sort, 'direction' => $this->direction]);
+        $filters = TaskFiltersData::fromArray(['search' => $this->search, 'status' => $this->status, 'priority' => $this->priority, 'project_id' => $this->projectId ?: null, 'assignee_id' => $this->assigneeId ?: null, 'due_before' => $this->dueBefore ?: null, 'sort' => $this->sort, 'direction' => $this->direction, 'label_ids' => $this->labelIds]);
 
-        return view('tasks::livewire.task-filters', ['tasks' => $tasks->paginate($actor, $filters), 'projects' => $tasks->projects($actor), 'users' => $tasks->users($actor), 'statuses' => TaskStatus::cases(), 'priorities' => TaskPriority::cases()]);
+        return view('tasks::livewire.task-filters', ['tasks' => $tasks->paginate($actor, $filters), 'projects' => $tasks->projects($actor), 'users' => $tasks->users($actor), 'statuses' => TaskStatus::cases(), 'priorities' => TaskPriority::cases(), 'labels' => $tasks->labels($actor)]);
     }
 }

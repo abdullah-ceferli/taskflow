@@ -34,6 +34,7 @@ jobs:
       - run: composer validate --strict
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: npm ci
+      - run: npm run build
       - run: php -r "touch('database/ci.sqlite');"
       - run: php artisan taskflow:migrations:check
       - run: php artisan migrate --database=sqlite --force
@@ -41,7 +42,6 @@ jobs:
       - run: php vendor/bin/phpstan analyse --memory-limit=1G
       - run: php scripts/run-mutation-pilot.php
       - run: php vendor/bin/pint --test
-      - run: npm run build
       - run: php artisan taskflow:backup:restore-drill
       - run: composer audit --locked
       - run: npm audit --audit-level=high

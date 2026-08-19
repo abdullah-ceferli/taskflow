@@ -41,7 +41,10 @@ test('members only see tasks assigned to them', function (): void {
     $visible = Task::factory()->create(['project_id' => $project->id, 'creator_id' => $owner->id, 'assignee_id' => $member->id]);
     $hidden = Task::factory()->create(['project_id' => $project->id, 'creator_id' => $owner->id, 'assignee_id' => $otherMember->id]);
 
-    $ids = app(TaskRepositoryInterface::class)->paginateFor($member, TaskFiltersData::fromArray([]))->pluck('id')->all();
+    $tasks = app(TaskRepositoryInterface::class)
+        ->paginateFor($member, TaskFiltersData::fromArray([]))
+        ->items();
+    $ids = array_map(static fn (Task $task): int => $task->id, $tasks);
 
     expect($ids)->toContain($visible->id)->not->toContain($hidden->id);
     expect(Gate::forUser($member)->allows('view', $hidden))->toBeFalse();
@@ -68,4 +71,22 @@ test('task creation rejects archived projects and foreign assignees', function (
 
     expect(fn () => app(TaskService::class)->create($manager, $archivedProject->id, $archivedData))
         ->toThrow(DomainRuleViolation::class, 'active projects');
+});
+
+test('creating a task redirects to a renderable task detail page', function (): void {
+    $manager = taskUser(UserRole::ProjectManager);
+    $project = Project::factory()->create(['owner_id' => $manager->id]);
+
+    $this->actingAs($manager)
+        ->withSession(['current_workspace_id' => $project->workspace_id])
+        ->followingRedirects()
+        ->post(route('tasks.store', $project), [
+            'title' => 'Render task detail after creation',
+            'description' => 'Regression coverage for the task detail Blade template.',
+            'priority' => TaskPriority::Medium->value,
+            'estimate_hours' => 2,
+        ])
+        ->assertOk()
+        ->assertSee('Render task detail after creation')
+        ->assertSee('No comments yet.');
 });
